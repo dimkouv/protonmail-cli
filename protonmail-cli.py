@@ -1,13 +1,14 @@
 import os, datetime, time
 import settings
-import pyvirtualdisplay as display
+from bs4 import BeautifulSoup as bs4
+from pyvirtualdisplay.display import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
 
 def log(msg, reason="DEBUG"):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%s %H:%M:%S")
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_entry = "[%s] %s: %s" % (reason, timestamp, msg)
 
     if settings.logfile:
@@ -57,10 +58,25 @@ def run():
         log("Login credentials sent")
 
     def read_emails():
-        try_until_elem_appears("conversation", "class")
+        try_until_elem_appears("conversation-meta", "class")
 
-        print(driver.page_source, file=open("test.html", "w"))
+        soup = bs4(driver.page_source, "html.parser")
+        mails_soup = soup.select(".conversation-meta")
 
+        mails = []
+
+        for mail in mails_soup:
+            try:
+                mails.append({
+                    "title": mail.select(".subject")[0].get("title"),
+                    "time": mail.select(".time")[0].string,
+                    "name": mail.select(".senders-name")[0].string,
+                    "mail": mail.select(".senders-name")[0].get("title")
+                })
+            except Exception as e:
+                log(str(e), "ERROR")
+                continue
+        print(mails)
 
     login()
     read_emails()
@@ -69,17 +85,16 @@ def run():
 if __name__ == "__main__":
     display = None
     if not settings.show_browser:
-        display = display.Display(visible=0, size=(1366, 768))
+        display = Display(visible=0, size=(1366, 768))
         display.start()
-    
+
     driver = webdriver.Firefox()
 
     try:
         run()
     except Exception as e:
-        print(e)
+        log(str(e), "ERROR")
 
-    if display:
-        display.stop()
     driver.close()
-
+    if display is not None:
+        display.stop()
