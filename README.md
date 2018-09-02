@@ -2,19 +2,32 @@
 Command line utility to read my protonmail inbox 
 
 ## Setup
+Download firefox `geckodriver` from mozilla
 ```
-apt install xvfb
+https://github.com/mozilla/geckodriver/releases
+```
 
-pip install -r requirements.pip
+After downloading extract and place `geckodriver` executable
+under `/usr/bin/`
+
+Install virtual display
+```
+apt install xvfb # debian
+dnf install xorg-x11-server-Xvfb # fedora
+```
+
+Install python3 requirements
+```
+pip3 install -r requirements.pip --user
 ```
 
 ## Usage
 ```
 # get an overview of the inbox
-protonmail-cli list-inbox
+python3 protonmail-cli list-inbox
 
 # check for mail and display notification on mail arrival
-protonmail-cli check-inbox
+python3 protonmail-cli check-inbox
 ```
 
 
@@ -22,3 +35,4 @@ protonmail-cli check-inbox
 - Also monitor spam folder
 - Wrap as a `systemd` service
 - Fix @BUG
+
