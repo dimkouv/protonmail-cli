@@ -5,7 +5,7 @@ Command line utility to read my protonmail inbox
 ```
 apt install xvfb
 
-pip install requirements.pip
+pip install -r requirements.pip
 ```
 
 ## Usage
