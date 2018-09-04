@@ -7,6 +7,15 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
 
+def tail(filename, n):
+    """Keep last :n lines of file specified by :filename"""
+    tmpf = "pr-cli.tmp"
+    (os.system(cmd) for cmd in [
+        "tail -%d %s > %s" % (n, filename, tmpf),
+        "cp %s %s; rm %s" % (tmpf, filename, tmpf)
+    ])
+
+
 def log(msg, reason="DEBUG"):
     """If settings.logfile is set write :msg in logfile else
     write in standard output"""
@@ -14,13 +23,7 @@ def log(msg, reason="DEBUG"):
     log_entry = "[%s] %s: %s" % (reason, timestamp, msg)
 
     if settings.logfile and os.path.exists(settings.logfile):
-        cmds = [
-            "cp %s pr-cli-log.bak" % (settings.logfile),
-            "cat pr-cli-log.bak | tail -%d > %s" % (settings.logfile_rows_keep, settings.logfile),
-            "rm pr-cli-log.bak"
-        ]
-        for cmd in cmds:
-            os.system(cmd)
+        tail(settings.logfile, settings.logfile_rows_keep)
 
     if settings.logfile:
         open_type = 'w'
@@ -38,7 +41,9 @@ def try_until_elem_appears(elem_val, elem_type="id"):
     Tries to find the element specified by :elem_val
     where :elem_val can be of :elem_type 'id', 'class' or 'css'.
 
-    After :settings.max_retries number of times exits"""
+    Returns True if element was found in time else False
+
+    After :settings.max_retries number of times stops trying"""
     
     retries = 0
     time.sleep(0.5)
@@ -46,7 +51,7 @@ def try_until_elem_appears(elem_val, elem_type="id"):
         try:
             if retries > settings.max_retries:
                 break
-            
+
             if elem_type == "id":
                 driver.find_element_by_id(elem_val)
             elif elem_type == "class":
@@ -55,16 +60,22 @@ def try_until_elem_appears(elem_val, elem_type="id"):
                 driver.find_element_by_css_selector(elem_val)
             else:
                 raise ValueError("Unknown elem_type")
-            break
+            return True
 
         except NoSuchElementException:
+            log("waiting...")
             retries += 1
             time.sleep(settings.load_wait)
+    
+    return False
 
 
 def login():
     """Login to protonmail panel
-    using credentials from :settings.py"""
+    using credentials from :settings.py
+    
+    Returns True or False wether login was succesful
+    """
 
     log("Open login page")
     driver.get("https://protonmail.com/login")
@@ -79,13 +90,12 @@ def login():
 
     log("Login credentials sent")
 
+    return try_until_elem_appears("conversation-meta", "class")
+
 
 def read_mails():
     """Read and return a list of mails from the main
     protonmail page (after login)"""
-    
-    try_until_elem_appears("conversation-meta", "class")
-
     soup = bs4(driver.page_source, "html.parser")
     mails_soup = soup.select(".conversation-meta")
 
@@ -102,6 +112,11 @@ def read_mails():
         except Exception as e:
             log(str(e), "ERROR")
             continue
+
+    mails = mails[:settings.mails_read_num]
+    
+    if settings.date_order == "asc":
+        return reversed(mails)
     return mails
 
 
@@ -163,15 +178,19 @@ def print_mail(mail):
 
 def run():
     if len(sys.argv) > 1:
-        op = sys.argv[1]
+        if login():
+            log("Logged in succesfully")
+        else:
+            log("Unable to login", "ERROR")
+            return
         
+        op = sys.argv[1]
+
         if op == "list-inbox":
-            login()
             for mail in read_mails():
                 print_mail(mail)
 
         elif op == "check-inbox":
-            login()
             while True:
                 mails = read_mails()
                 check_for_new_mail(mails)

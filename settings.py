@@ -27,3 +27,10 @@ show_browser = False
 # (used only in case of `check-inbox` operation)
 # set to 0 to check just once
 check_mail_period = 60
+
+# set date order
+# "asc | des"
+date_order = "asc"
+
+# max number of displayed mails
+mails_read_num = 10

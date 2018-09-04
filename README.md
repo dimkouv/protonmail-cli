@@ -11,10 +11,10 @@ pip install requirements.pip
 ## Usage
 ```
 # get an overview of the inbox
-protonmail-cli list-inbox
+python3 protonmail-cli list-inbox
 
 # check for mail and display notification on mail arrival
-protonmail-cli check-inbox
+python3 protonmail-cli check-inbox
 ```
 
 
