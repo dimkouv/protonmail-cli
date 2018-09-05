@@ -4,7 +4,7 @@ username = "mymail@protonmail.com"
 # protonmail password
 password = "mysafepass"
 
-# file to store log (leave empty string to display in cmd)
+# file to store log (leave empty string to display in stdout)
 logfile = ""
 #logfile = "protonmail-cli.log"
 
