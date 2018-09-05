@@ -1,8 +1,10 @@
+#!/usr/bin/python3
 import os
 import datetime
 import time
 import hashlib
 import sys
+
 import settings
 from bs4 import BeautifulSoup as bs4
 from pyvirtualdisplay.display import Display
@@ -80,33 +82,37 @@ def login():
     
     Returns True or False wether login was succesful
     """
+    def do_login():
+        log("Open login page")
+        driver.get("https://protonmail.com/login")
+        try_until_elem_appears("username")
+        log("Login page loaded")
+        username_input = driver.find_element_by_id("username")
+        password_input = driver.find_element_by_id("password")
+        username_input.send_keys(settings.username)
+        password_input.send_keys(settings.password)
+        password_input.send_keys(Keys.RETURN)
+        log("Login credentials sent")
+        
+        time.sleep(1)
 
-    log("Open login page")
-    driver.get("https://protonmail.com/login")
-    try_until_elem_appears("username")
-    log("Login page loaded")
+        twofactor = False
+        if "ng-hide" not in driver.find_element_by_id("pm_loginTwoFactor").get_attribute('class'):
+            twofactor = True
 
-    username_input = driver.find_element_by_id("username")
-    password_input = driver.find_element_by_id("password")
-    username_input.send_keys(settings.username)
-    password_input.send_keys(settings.password)
-    password_input.send_keys(Keys.RETURN)
+        if twofactor:
+            log("Two-factor authentication enabled")
+            twofactor_input = driver.find_element_by_id("twoFactorCode")
+            twofactor_input.send_keys(input("Enter two-factor authentication code: "))
+            twofactor_input.send_keys(Keys.RETURN)
 
-    log("Login credentials sent")
-
-    time.sleep(1)
-
-    twofactor = False
-    if "ng-hide" not in driver.find_element_by_id("pm_loginTwoFactor").get_attribute('class'):
-        twofactor = True
-
-    if twofactor:
-        log("Two-factor authentication enabled")
-        twofactor_input = driver.find_element_by_id("twoFactorCode")
-        twofactor_input.send_keys(input("Enter two-factor code here: "))
-        twofactor_input.send_keys(Keys.RETURN)
-
-    return try_until_elem_appears("conversation-meta", "class")
+        return try_until_elem_appears("conversation-meta", "class")
+    
+    if do_login():
+        log("Logged in succesfully")
+    else:
+        log("Unable to login", "ERROR")
+        sys.exit(0)
 
 
 def read_mails():
@@ -163,25 +169,28 @@ def check_for_new_mail(mails):
         f.write(new_hash)
 
 
-def print_usage():
+def print_usage_and_exit():
     print("""
     NAME
         protonmail-cli - Protonmail CLI tool
-    
-    SYNOPSIS
-        protonmail-cli [OPTION]
-    
-    DESCRIPTION
-        protonmail-cli list-inbox
+
+    USAGE
+        > ./protonmail-cli.py list-inbox
             Prints the latest mail titles
-        
-        protonmail-cli check-inbox
+
+        > ./protonmail-cli.py check-inbox
             Checks for new message and displays a system notification
             check period is defined in settings.py
-        
-        protonmail-cli help
+
+        > ./protonmail-cli.py send-mail -to "address1;address2"
+                                   -subject "subject"
+                                   -body "message"
+            Sends an email to the specified addresses.
+
+        > ./protonmail-cli.py help
             Prints this dialog
     """)
+    sys.exit(0)
 
 
 def print_mail(mail):
@@ -193,39 +202,101 @@ def print_mail(mail):
     print(out)
 
 
+def send_mail(to, subject, message):
+    """Sends an email. Requires login() to be executed first.
+    Params
+    ------
+    :to [list of mails]
+    :subject [str]
+    :message [str]"""
+
+    # click new mail button
+    el = driver.find_element_by_class_name("sidebar-btn-compose")
+    el.click()
+
+    # wait for mail dialog to appear
+    try_until_elem_appears("composer", "class")
+
+    # type receivers list
+    el = driver.find_element_by_css_selector(".composer-field-ToList input")
+    for address in to:
+        el.send_keys(address + ";")
+        time.sleep(0.2)
+
+    # type subject
+    el = driver.find_element_by_css_selector(".subjectRow input")
+    el.send_keys(subject)
+
+    # type message
+    driver.switch_to.frame(driver.find_element_by_class_name('squireIframe'))
+    el = driver.find_element_by_css_selector("html.angular-squire-iframe body")
+    el.send_keys(message)
+    driver.switch_to.default_content()
+
+    # click send
+    el = driver.find_element_by_css_selector(".btnSendMessage-btn-action")
+    el.click()
+
+    time.sleep(settings.load_wait)
+
+
+def parse_args():
+    """Parses and returns dict of cmd line params
+    returns dict {
+        "operation": str
+        "to": []        @operation=send-mail
+        "subject": str  @operation=send-mail
+        "body": str     @operation=send-mail
+    }
+    """
+    def get_key_arg(key):
+        for i, arg in enumerate(sys.argv):
+            if arg == key:
+                return sys.argv[i+1]
+        raise ValueError("Invalid arguments")
+
+    try:
+        args = {"operation": sys.argv[1]}
+        
+        if args["operation"] == "send-mail":
+            args["to"] = [x.strip() for x in get_key_arg("-to").split(";")]
+            args["subject"] = get_key_arg("-subject")
+            args["body"] = get_key_arg("-body")
+
+        return args
+    except:
+        print_usage_and_exit()
+
+
 def run():
-    if len(sys.argv) > 1:
-        if login():
-            log("Logged in succesfully")
-        else:
-            log("Unable to login", "ERROR")
-            return
+    args = parse_args()
 
-        op = sys.argv[1]
+    if args["operation"] == "list-inbox":
+        login()
+        for mail in read_mails():
+            print_mail(mail)
 
-        if op == "list-inbox":
-            for mail in read_mails():
-                print_mail(mail)
+    elif args["operation"] == "check-inbox":
+        login()
+        while True:
+            mails = read_mails()
+            check_for_new_mail(mails)
+            if settings.check_mail_period == 0:
+                break
+            else:
+                time.sleep(settings.check_mail_period)
 
-        elif op == "check-inbox":
-            while True:
-                mails = read_mails()
-                check_for_new_mail(mails)
-                if settings.check_mail_period == 0:
-                    break
-                else:
-                    time.sleep(settings.check_mail_period)
+    elif args["operation"] == "send-mail":
+        login()
+        try:
+            log("Opening mail dialog")
+            send_mail(args["to"], args["subject"], args["body"])
+            log("email sent.")
+        except Exception as e:
+            log(str(e), "ERROR")
 
-        elif op == "help":
-            print_usage()
-
-        else:
-            print("Operation not valid")
-            print_usage()
-
-        return
-
-    print_usage()
+    else:
+        print_usage_and_exit()
 
 
 if __name__ == "__main__":
