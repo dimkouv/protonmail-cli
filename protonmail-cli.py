@@ -1,4 +1,8 @@
-import os, datetime, time, hashlib, sys
+import os
+import datetime
+import time
+import hashlib
+import sys
 import settings
 from bs4 import BeautifulSoup as bs4
 from pyvirtualdisplay.display import Display
@@ -44,7 +48,7 @@ def try_until_elem_appears(elem_val, elem_type="id"):
     Returns True if element was found in time else False
 
     After :settings.max_retries number of times stops trying"""
-    
+
     retries = 0
     time.sleep(0.5)
     while True:
@@ -66,7 +70,7 @@ def try_until_elem_appears(elem_val, elem_type="id"):
             log("waiting...")
             retries += 1
             time.sleep(settings.load_wait)
-    
+
     return False
 
 
@@ -89,6 +93,18 @@ def login():
     password_input.send_keys(Keys.RETURN)
 
     log("Login credentials sent")
+
+    time.sleep(1)
+
+    twofactor = False
+    if "ng-hide" not in driver.find_element_by_id("pm_loginTwoFactor").get_attribute('class'):
+        twofactor = True
+
+    if twofactor:
+        log("Two-factor authentication enabled")
+        twofactor_input = driver.find_element_by_id("twoFactorCode")
+        twofactor_input.send_keys(input("Enter two-factor code here: "))
+        twofactor_input.send_keys(Keys.RETURN)
 
     return try_until_elem_appears("conversation-meta", "class")
 
@@ -114,7 +130,7 @@ def read_mails():
             continue
 
     mails = mails[:settings.mails_read_num]
-    
+
     if settings.date_order == "asc":
         return reversed(mails)
     return mails
@@ -138,7 +154,8 @@ def check_for_new_mail(mails):
 
     if old_hash and new_hash != old_hash:
         log("New message arrived")
-        os.system("notify-send 'You received a new message on your ProtonMail inbox'")
+        os.system(
+            "notify-send 'You received a new message on your ProtonMail inbox'")
     else:
         log("You don't have new messages")
 
@@ -183,7 +200,7 @@ def run():
         else:
             log("Unable to login", "ERROR")
             return
-        
+
         op = sys.argv[1]
 
         if op == "list-inbox":
