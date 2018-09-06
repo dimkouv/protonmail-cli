@@ -175,19 +175,19 @@ def print_usage_and_exit():
         protonmail-cli - Protonmail CLI tool
 
     USAGE
-        > ./protonmail-cli.py list-inbox
+        > protonmail-cli list-inbox
             Prints the latest mail titles
 
-        > ./protonmail-cli.py check-inbox
+        > protonmail-cli check-inbox
             Checks for new message and displays a system notification
             check period is defined in settings.py
 
-        > ./protonmail-cli.py send-mail -to "address1;address2"
+        > protonmail-cli send-mail -to "address1;address2"
                                    -subject "subject"
                                    -body "message"
             Sends an email to the specified addresses.
 
-        > ./protonmail-cli.py help
+        > protonmail-cli help
             Prints this dialog
     """)
     sys.exit(0)
