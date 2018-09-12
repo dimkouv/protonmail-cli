@@ -5,6 +5,8 @@ import datetime
 import time
 import hashlib
 import sys
+import argparse
+import atexit
 
 import settings
 from bs4 import BeautifulSoup as bs4
@@ -12,30 +14,6 @@ from pyvirtualdisplay.display import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
-
-
-def print_usage_and_exit():
-    print("""
-    NAME
-        protonmail-cli - ProtonMail CLI tool
-
-    USAGE
-        > protonmail-cli list-inbox
-            Prints the latest mail titles
-
-        > protonmail-cli check-inbox
-            Checks for new message and displays a system notification
-            check period is defined in settings.py
-
-        > protonmail-cli send-mail -to "address1;address2"
-                                   -subject "subject"
-                                   -body "message"
-            Sends an email to the specified addresses.
-
-        > protonmail-cli help
-            Prints this dialog
-    """)
-    sys.exit(0)
 
 
 def tail(filename, n):
@@ -245,66 +223,107 @@ def send_mail(to, subject, message):
     time.sleep(settings.load_wait)
 
 
-def parse_args():
-    """Parses and returns dict of cmd line params
-    returns dict {
-        "operation": str
-        "to": []        @operation=send-mail
-        "subject": str  @operation=send-mail
-        "body": str     @operation=send-mail
-    }
-    """
-    def get_key_arg(key):
-        for i, arg in enumerate(sys.argv):
-            if arg == key:
-                return sys.argv[i+1]
-        raise ValueError("Invalid arguments")
+def subcommand_list(args):
+    log("Action: list emails")
+    login()
 
+    for mail in read_mails():
+        print_mail(mail)
+
+
+def subcommand_check(args):
+    log("Action: check emails")
+    login()
+
+    while True:
+        mails = read_mails()
+        check_for_new_mail(mails)
+        if settings.check_mail_period == 0:
+            break
+        else:
+            time.sleep(settings.check_mail_period)
+
+
+def subcommand_send(args):
+    log("Action: send email")
+    login()
+    
     try:
-        args = {"operation": sys.argv[1]}
-
-        if args["operation"] == "send-mail":
-            args["to"] = [x.strip() for x in get_key_arg("-to").split(";")]
-            args["subject"] = get_key_arg("-subject")
-            args["body"] = get_key_arg("-body")
-
-        return args
-    except:
-        print_usage_and_exit()
+        log("Opening mail dialog")
+        send_mail(args.to, args.subject, args.body)
+        log("email sent.")
+    except Exception as e:
+        log(str(e), "ERROR")
 
 
-def run():
-    args = parse_args()
+def parse_args():
+    """Return the populated namespace from ArgumentParser.parse_args."""
+    parser = argparse.ArgumentParser(
+        description="ProtonMail CLI tool",
+        epilog="Homepage: https://github.com/dimkouv/protonmail-cli")
 
-    if args["operation"] == "list-inbox":
-        login()
-        for mail in read_mails():
-            print_mail(mail)
+    subparsers = parser.add_subparsers(
+        title="actions",
+        description="The high level actions available to ProtonMail CLI. For more detail, the help flag is available for all actions.",
+        metavar="action")
 
-    elif args["operation"] == "check-inbox":
-        login()
-        while True:
-            mails = read_mails()
-            check_for_new_mail(mails)
-            if settings.check_mail_period == 0:
-                break
-            else:
-                time.sleep(settings.check_mail_period)
+    # Required to be set after the creation because of bug: https://stackoverflow.com/a/18283730
+    subparsers.required = True
 
-    elif args["operation"] == "send-mail":
-        login()
-        try:
-            log("Opening mail dialog")
-            send_mail(args["to"], args["subject"], args["body"])
-            log("email sent.")
-        except Exception as e:
-            log(str(e), "ERROR")
+    # List inbox arguments
+    list_inbox_parser = subparsers.add_parser(
+        "list",
+        aliases=["l"],
+        help="Print the latest mails title from the inbox.")
+    list_inbox_parser.set_defaults(func=subcommand_list)
 
-    else:
-        print_usage_and_exit()
+    # Check inbox arguments
+    check_inbox_parser = subparsers.add_parser(
+        "check",
+        aliases=["c"],
+        help="Check the inbox for new message and displays a system notification.")
+    check_inbox_parser.set_defaults(func=subcommand_check)
+
+    # Send email arguments
+    send_mail_parser = subparsers.add_parser(
+        "send",
+        aliases=["s"],
+        help="Send an email to the specified addresses.")
+    send_mail_parser.set_defaults(func=subcommand_send)
+
+    send_mail_parser.add_argument(
+        "-t",
+        "--to",
+        help="Recipient's address",
+        action="append",
+        required=True)
+    send_mail_parser.add_argument(
+        "-s",
+        "--subject",
+        help="Subject",
+        required=True)
+    send_mail_parser.add_argument(
+        "-b",
+        "--body",
+        help="Body text",
+        required=True)
+
+    return parser.parse_args()
+
+
+def cleanup(driver, display):
+    """atexit handler; automatically executed upon normal interpreter termination."""
+    if driver is not None:
+        driver.close()
+        driver.quit()
+
+    if display is not None:
+        display.stop()
 
 
 if __name__ == "__main__":
+    args = parse_args()
+
     display = None
     if not settings.show_browser:
         display = Display(visible=0, size=(1366, 768))
@@ -312,11 +331,10 @@ if __name__ == "__main__":
 
     driver = webdriver.Firefox()
 
+    atexit.register(cleanup, driver=driver, display=display)
+
     try:
-        run()
+        # Execute the selected subcommand/action.
+        args.func(args)
     except Exception as e:
         log(str(e), "ERROR")
-
-    driver.close()
-    if display is not None:
-        display.stop()
