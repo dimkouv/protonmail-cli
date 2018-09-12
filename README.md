@@ -27,25 +27,33 @@ ln -s /opt/protonmail-cli/protonmail-cli.py /bin/protonmail-cli
 pip3 install -r /opt/protonmail-cli/requirements.pip
 ```
 
-Test the installation by running `protonmail-cli help` on a new terminal.
+Test the installation by running `protonmail-cli --help` on a new terminal.
 
 Settings including user credentials can be specified on `/opt/protonmail-cli/settings.py`
 
 ## Usage
 
 ```bash
-> protonmail-cli list-inbox
-    Prints the latest mail titles
+usage: protonmail-cli.py [-h] action ...
 
-> protonmail-cli check-inbox
-    Checks for new message and displays a system notification
-    check frequency is defined in settings.py
+ProtonMail CLI tool
 
-> protonmail-cli send-mail -to "address1;address2" \
-                           -subject "subject" \
-                           -body "message"
-    Sends an email to the specified addresses.
+optional arguments:
+  -h, --help  show this help message and exit
 
-> ./protonmail-cli help
-    Prints this dialog
+actions:
+  The high level actions available to ProtonMail CLI. For more detail, the
+  help flag is available for all actions.
+
+  action
+    list (l)  Print the latest mails title from the inbox.
+    check (c)
+              Check the inbox for new message and displays a system
+              notification.
+    send (s)  Send an email to the specified addresses.
+            optional arguments:
+              -t TO, --to TO        Recipient's address
+              -s SUBJECT, --subject SUBJECT
+                                    Subject
+              -b BODY, --body BODY  Body text
 ```
