@@ -8,12 +8,13 @@ import sys
 import argparse
 import atexit
 
-import settings
 from bs4 import BeautifulSoup as bs4
 from pyvirtualdisplay.display import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+
+import settings
 
 
 def tail(filename, n):
@@ -60,11 +61,11 @@ def try_until_elem_appears(elem_val, elem_type="id"):
                 break
 
             if elem_type == "id":
-                driver.find_element_by_id(elem_val)
+                web_driver.find_element_by_id(elem_val)
             elif elem_type == "class":
-                driver.find_element_by_class_name(elem_val)
+                web_driver.find_element_by_class_name(elem_val)
             elif elem_type == "css":
-                driver.find_element_by_css_selector(elem_val)
+                web_driver.find_element_by_css_selector(elem_val)
             else:
                 raise ValueError("Unknown elem_type")
             return True
@@ -83,14 +84,16 @@ def login():
 
     Returns True or False wether login was successful.
     """
+
     def do_login():
+        """:returns: True on successful login else False"""
         log("Open login page")
-        driver.get(settings.url)
+        web_driver.get(settings.url)
         try_until_elem_appears(settings.element_login['username_id'], "id")
 
         log("Login page loaded")
-        username_input = driver.find_element_by_id(settings.element_login['username_id'])
-        password_input = driver.find_element_by_id(settings.element_login['password_id'])
+        username_input = web_driver.find_element_by_id(settings.element_login['username_id'])
+        password_input = web_driver.find_element_by_id(settings.element_login['password_id'])
 
         username_input.send_keys(settings.username)
         password_input.send_keys(settings.password)
@@ -100,15 +103,16 @@ def login():
 
         time.sleep(1)
 
-        twofactor = False
-        if "ng-hide" not in driver.find_element_by_id(settings.element_twofactor['detection_id']).get_attribute('class'):
-            twofactor = True
+        two_factor = False
+        if "ng-hide" not in web_driver.find_element_by_id(
+                settings.element_twofactor['detection_id']).get_attribute('class'):
+            two_factor = True
 
-        if twofactor:
+        if two_factor:
             log("Two-factor authentication enabled")
-            twofactor_input = driver.find_element_by_id(settings.element_twofactor['code_id'])
-            twofactor_input.send_keys(input("Enter two-factor authentication code: "))
-            twofactor_input.send_keys(Keys.RETURN)
+            two_factor_input = web_driver.find_element_by_id(settings.element_twofactor['code_id'])
+            two_factor_input.send_keys(input("Enter two-factor authentication code: "))
+            two_factor_input.send_keys(Keys.RETURN)
 
         return try_until_elem_appears(settings.element_login['after_login_detection_class'], "class")
 
@@ -123,7 +127,7 @@ def read_mails():
     """Read and return a list of mails from the main
     ProtonMail page (after login).
     """
-    soup = bs4(driver.page_source, "html.parser")
+    soup = bs4(web_driver.page_source, "html.parser")
     mails_soup = soup.select(settings.element_list_inbox['individual_email_soupclass'])
 
     mails = []
@@ -146,7 +150,7 @@ def read_mails():
     mails = mails[:settings.mails_read_num]
 
     if settings.date_order == "asc":
-        return reversed(mails)
+        return list(reversed(mails))
     return mails
 
 
@@ -175,49 +179,52 @@ def check_for_new_mail(mails):
     new_hash = hashlib.sha256(str(mails).encode()).hexdigest()
 
     if old_hash and new_hash != old_hash:
-        log("New message arrived")
+        log("New mail arrived")
+        log("Showing latest 5 mails...")
+        for mail in mails[:5]:
+            print_mail(mail)
         os.system(
-            "notify-send 'You received a new message on your ProtonMail inbox'")
+            "notify-send 'You received a new mail on your ProtonMail inbox'")
     else:
-        log("You don't have new messages")
+        log("You don't have new mails")
 
     with open(hash_filename, "w") as f:
         f.write(new_hash)
 
 
 def send_mail(to, subject, message):
-    """Sends an email. Requires login() to be executed first.
-    Params
-    ------
-    :to [list of mails]
-    :subject [str]
-    :message [str]
+    """Sends an email.
+    login() needs to be executed first.
+
+    :to:      [str]     (list of mail addresses - recipients)
+    :subject: str       (subject of the mail)
+    :message: str       (message of the mail)
     """
     # click new mail button
-    el = driver.find_element_by_class_name(settings.element_send_mail['open_composer_class'])
+    el = web_driver.find_element_by_class_name(settings.element_send_mail['open_composer_class'])
     el.click()
 
     # wait for mail dialog to appear
     try_until_elem_appears(settings.element_send_mail['composer_detection_class'], "class")
 
     # type receivers list
-    el = driver.find_element_by_css_selector(settings.element_send_mail['to_field_css'])
+    el = web_driver.find_element_by_css_selector(settings.element_send_mail['to_field_css'])
     for address in to:
         el.send_keys(address + ";")
         time.sleep(0.2)
 
     # type subject
-    el = driver.find_element_by_css_selector(settings.element_send_mail['subject_field_css'])
+    el = web_driver.find_element_by_css_selector(settings.element_send_mail['subject_field_css'])
     el.send_keys(subject)
 
     # type message
-    driver.switch_to.frame(driver.find_element_by_class_name(settings.element_send_mail['switch_to_message_field_class']))
-    el = driver.find_element_by_css_selector(settings.element_send_mail['message_field_css'])
+    web_driver.switch_to.frame(web_driver.find_element_by_class_name(settings.element_send_mail['switch_to_message_field_class']))
+    el = web_driver.find_element_by_css_selector(settings.element_send_mail['message_field_css'])
     el.send_keys(message)
-    driver.switch_to.default_content()
+    web_driver.switch_to.default_content()
 
     # click send
-    el = driver.find_element_by_css_selector(settings.element_send_mail['send_button_css'])
+    el = web_driver.find_element_by_css_selector(settings.element_send_mail['send_button_css'])
     el.click()
 
     time.sleep(settings.load_wait)
@@ -281,7 +288,7 @@ def parse_args():
     check_inbox_parser = subparsers.add_parser(
         "check",
         aliases=["c"],
-        help="Check the inbox for new message and displays a system notification.")
+        help="Check the inbox for new mail and displays a system notification.")
     check_inbox_parser.set_defaults(func=subcommand_check)
 
     # Send email arguments
@@ -311,27 +318,27 @@ def parse_args():
     return parser.parse_args()
 
 
-def cleanup(driver, display):
+def cleanup(web_driver, virtual_display):
     """atexit handler; automatically executed upon normal interpreter termination."""
-    if driver is not None:
-        driver.close()
-        driver.quit()
+    if web_driver is not None:
+        web_driver.close()
+        web_driver.quit()
 
-    if display is not None:
-        display.stop()
+    if virtual_display is not None:
+        virtual_display.stop()
 
 
 if __name__ == "__main__":
     args = parse_args()
 
-    display = None
+    virtual_display = None
     if not settings.show_browser:
-        display = Display(visible=0, size=(1366, 768))
-        display.start()
+        virtual_display = Display(visible=0, size=(1366, 768))
+        virtual_display.start()
 
-    driver = webdriver.Firefox()
+    web_driver = webdriver.Firefox()
 
-    atexit.register(cleanup, driver=driver, display=display)
+    atexit.register(cleanup, web_driver=web_driver, virtual_display=virtual_display)
 
     try:
         # Execute the selected subcommand/action.
