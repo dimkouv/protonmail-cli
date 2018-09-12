@@ -1,4 +1,4 @@
-# Protonmail CLI
+# ProtonMail CLI
 Command line utility for https://protonmail.com
 
 ## Installation
