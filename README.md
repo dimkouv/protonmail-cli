@@ -15,7 +15,7 @@ Geckodriver
 # for linux x64
 wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
 
-tar -xvf gekodriver-*.tar.gz -C /bin/
+tar -xvf geckodriver-*.tar.gz -C /bin/
 rm geckodriver-*.tar.gz
 ```
 
@@ -29,8 +29,7 @@ pip3 install -r /opt/protonmail-cli/requirements.pip
 
 Test the installation by running `protonmail-cli help` on a new terminal.
 
-Settings including user credentials can be specified on  `/opt/protonmail-cli/settings.py`
-
+Settings including user credentials can be specified on `/opt/protonmail-cli/settings.py`
 
 ## Usage
 
