@@ -40,11 +40,8 @@ def print_usage_and_exit():
 
 def tail(filename, n):
     """Keep last :n lines of file specified by :filename."""
-    tmpf = "pr-cli.tmp"
-    (os.system(cmd) for cmd in [
-        "tail -%d %s > %s" % (n, filename, tmpf),
-        "cp %s %s; rm %s" % (tmpf, filename, tmpf)
-    ])
+    log_file_content = open(filename, "r").readlines()
+    open(filename, "w").writelines(log_file_content[:n])
 
 
 def log(msg, reason="DEBUG"):
