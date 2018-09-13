@@ -88,19 +88,6 @@ def wait_for_elem(web_driver, elem_val, elem_type="id"):
     return False
 
 
-def print_mail(mail):
-    """Prints a mail entry as described in :read_mails.
-
-    :param mail: 
-
-    """
-    out = "[" + mail.get("time") + "] " + mail.get("name")
-    if mail.get("mail") != mail.get("name"):
-        out += " " + mail.get("mail")
-    out += "\n" + mail.get("title") + "\n"
-    print(out)
-
-
 def write_hash(new_hash):
     """Stores the given hash on protonmail work directory
 

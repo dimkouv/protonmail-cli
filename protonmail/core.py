@@ -12,6 +12,23 @@ from . import utilities
 from . import variables
 
 
+class Mail:
+    def __init__(self, subject, time_received, mail_alias, mail):
+        self.subject = subject
+        self.time_received = time_received
+        self.mail_alias = mail_alias
+        self.mail = mail
+
+    def __str__(self):
+        """
+        Mail string representation
+        """
+        res = "Date: %s\n" % self.time_received
+        res += "From: [%s] %s\n" % (self.mail_alias, self.mail)
+        res += "Subject: %s\n" % self.subject
+        return res
+
+
 class ProtonmailClient:
     web_driver = None
     virtual_display = None
@@ -95,12 +112,13 @@ class ProtonmailClient:
 
         for mail in mails_soup:
             try:
-                mails.append({
-                    "title": mail.select(subject_class)[0].get("title"),
-                    "time": mail.select(time_class)[0].string,
-                    "name": mail.select(sender_name_class)[0].string,
-                    "mail": mail.select(sender_name_class)[0].get("title")
-                })
+                new_mail = Mail(
+                    subject=mail.select(subject_class)[0].get("title"),
+                    time_received=mail.select(time_class)[0].string,
+                    mail_alias=mail.select(sender_name_class)[0].get("title"),
+                    mail=mail.select(sender_name_class)[0].string,
+                )
+                mails.append(new_mail)
             except Exception as e:
                 utilities.log(str(e), "ERROR")
                 continue

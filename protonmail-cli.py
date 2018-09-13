@@ -9,7 +9,7 @@ from protonmail import core, settings, utilities
 
 def subcommand_list(args):
     for mail in client.read_mails():
-        utilities.print_mail(mail)
+        print(mail)
 
 
 def subcommand_check(args):
