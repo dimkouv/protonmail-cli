@@ -74,5 +74,5 @@ client.send_mail(
 mails = client.read_mails()
 
 # check for new mail
-has_new_mail = client.check_for_new_mail()
+has_new_mail = client.has_new_mail()
 ```
