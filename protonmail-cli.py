@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import argparse
+import configparser
 import os
 import time
 
@@ -34,10 +35,27 @@ def subcommand_send(args):
         utilities.log(str(e), "ERROR")
 
 
+def overwrite_settings(args):
+    if args.credential:
+        config = configparser.ConfigParser(interpolation=None)
+        config.read(args.credential.name)
+
+        if "credential" in config:
+            if "username" in config["credential"] and "password" in config["credential"]:
+                settings.username = config["credential"]["username"]
+                settings.password = config["credential"]["password"]
+
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description="ProtonMail CLI tool",
         epilog="Homepage: https://github.com/dimkouv/protonmail-cli")
+
+    parser.add_argument(
+        "--credential",
+        help="File path of the credential file. If present and not empty, will override any user/password found inside settings.py.",
+        metavar="FILE_PATH",
+        type=argparse.FileType("r"))
 
     subparsers = parser.add_subparsers(
         title="actions",
@@ -71,7 +89,7 @@ def parse_args():
     send_mail_parser.add_argument(
         "-t",
         "--to",
-        help="Recipient's address",
+        help="Recipient's address. Unlimited number of -t can be added.",
         action="append",
         required=True)
     send_mail_parser.add_argument(
@@ -85,7 +103,9 @@ def parse_args():
         help="Body text",
         required=True)
 
-    return parser.parse_args()
+    args = parser.parse_args()
+    overwrite_settings(args)
+    return args
 
 
 if __name__ == "__main__":
