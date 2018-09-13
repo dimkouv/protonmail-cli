@@ -28,6 +28,10 @@ def log(msg, reason="DEBUG"):
     :param reason:  (Default value = "DEBUG")
 
     """
+    if not settings.core_logging:
+        # logging is disabled
+        return
+
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_entry = "[%s] %s: %s" % (reason, timestamp, msg)
 

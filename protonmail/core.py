@@ -17,14 +17,19 @@ class ProtonmailClient:
     web_driver = None
 
     def __init__(self):
-        virtual_display = None
-        if not settings.show_browser:
-            virtual_display = Display(visible=0, size=(1366, 768))
-            virtual_display.start()
+        utilities.log("Initiating ProtonMail client")
 
-        self.web_driver = webdriver.Firefox()
+        try:
+            virtual_display = None
+            if not settings.show_browser:
+                virtual_display = Display(visible=0, size=(1366, 768))
+                virtual_display.start()
 
-        atexit.register(self.stop, virtual_display=virtual_display)
+            self.web_driver = webdriver.Firefox()
+
+            atexit.register(self.stop, virtual_display=virtual_display)
+        except Exception as e:
+            utilities.log(str(e), "ERROR")
 
     def login(self, username, password):
         """Login to ProtonMail panel
@@ -101,16 +106,19 @@ class ProtonmailClient:
                 utilities.log(str(e), "ERROR")
                 continue
 
-        mails = mails[:settings.mails_read_num]
+        if settings.mails_read_num >= 0:
+            mails = mails[:settings.mails_read_num]
 
         if settings.date_order == "asc":
             return list(reversed(mails))
         return mails
 
-    def check_for_new_mail(self):
-        """Receives a list of mails and generates a unique hash.
+    def has_new_mail(self):
+        """Generates a unique hash from the mail inbox
         If the hash is different from the previous call of this function
         then a new mail was received.
+
+        :returns: True if a new mail was arrived else False
         
         @TODO in case we delete an email then the hash will be
         changed and we'll get a new mail notification.
@@ -123,19 +131,12 @@ class ProtonmailClient:
             old_hash = open(hash_filename, "r").readline()
 
         new_hash = hashlib.sha256(str(mails).encode()).hexdigest()
-
-        if old_hash and new_hash != old_hash:
-            utilities.log("New mail arrived")
-            utilities.log("Showing latest 5 mails...")
-            for mail in mails[:5]:
-                utilities.print_mail(mail)
-            os.system(
-                "notify-send 'You received a new mail on your ProtonMail inbox'")
-        else:
-            utilities.log("You don't have new mails")
-
         with open(hash_filename, "w") as f:
             f.write(new_hash)
+
+        if old_hash and new_hash != old_hash:
+            return True
+        return False
 
     def send_mail(self, to, subject, message):
         """Sends email.
@@ -176,7 +177,8 @@ class ProtonmailClient:
         time.sleep(settings.load_wait)
 
     def stop(self, virtual_display):
-        """atexit handler; automatically executed upon normal interpreter termination.
+        """
+        atexit handler; automatically executed upon normal interpreter termination.
 
         :param virtual_display: 
 

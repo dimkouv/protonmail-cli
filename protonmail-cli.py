@@ -1,22 +1,24 @@
 #!/usr/bin/python3
 import argparse
+import os
 import time
 
 from protonmail import core, settings, utilities
 
 
 def subcommand_list(args):
-    print("Action: list emails")
-
     for mail in client.read_mails():
         utilities.print_mail(mail)
 
 
 def subcommand_check(args):
-    print("Action: check emails")
-
     while True:
-        client.check_for_new_mail()
+        if client.has_new_mail():
+            print("New mail arrived")
+            os.system("notify-send 'You received a new mail on your ProtonMail inbox'")
+        else:
+            print("You don't have new mails")
+
         if settings.check_mail_period == 0:
             break
         else:
@@ -25,8 +27,6 @@ def subcommand_check(args):
 
 
 def subcommand_send(args):
-    print("Action: send email")
-
     try:
         client.send_mail(args.to, args.subject, args.body)
         print("Mail sent")
@@ -35,14 +35,13 @@ def subcommand_send(args):
 
 
 def parse_args():
-    """ """
     parser = argparse.ArgumentParser(
         description="ProtonMail CLI tool",
         epilog="Homepage: https://github.com/dimkouv/protonmail-cli")
 
     subparsers = parser.add_subparsers(
         title="actions",
-        description="The high level actions available to ProtonMail CLI. For more detail, the help flag is available for all actions.",
+        description="The high level actions available to ProtonMail CLI. For more details, the help flag is available for all actions.",
         metavar="action")
 
     # Required to be set after the creation because of bug: https://stackoverflow.com/a/18283730

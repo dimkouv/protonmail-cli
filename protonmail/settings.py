@@ -4,9 +4,23 @@ username = "mymail@protonmail.com"
 # ProtonMail user password.
 password = "mysafepass"
 
-# File to store logs. Leave empty string to display in stdout.
+# Set date order
+# "asc | des"
+date_order = "asc"
+
+# Max number of displayed mails.
+# set to -1 for no limit
+mails_read_num = -1
+
+# Check mail period in seconds
+check_mail_period = 60
+
+# File to store logs from core. Leave empty string to display in stdout.
 logfile = ""
 # logfile = "protonmail-cli.log"
+
+# Enables logging from core functions
+core_logging = False
 
 # Number of rows to keep in the log file.
 logfile_rows_keep = 10000
@@ -22,14 +36,3 @@ max_retries = 5
 # Do not hide the browser under xvfb, useful for debugging.
 show_browser = False
 
-# Check mail frequency in seconds
-# (used only in case of `check-inbox` operation).
-# Set to 0 to check just once.
-check_mail_period = 60
-
-# Set date order
-# "asc | des"
-date_order = "asc"
-
-# Max number of displayed mails.
-mails_read_num = 10

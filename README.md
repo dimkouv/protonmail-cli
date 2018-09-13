@@ -22,51 +22,40 @@ rm geckodriver-*.tar.gz
 Protonmail CLI
 ```bash
 git clone https://github.com/dimkouv/protonmail-cli /opt/protonmail-cli
+
+# install globally for usage from terminal
 ln -s /opt/protonmail-cli/protonmail-cli.py /bin/protonmail-cli
-
 pip3 install -r /opt/protonmail-cli/requirements.pip
+
+# install as a python3 package
+pip3 install /opt/protonmail-cli
 ```
-
-Test the installation by running `protonmail-cli --help` on a new terminal.
-
-Settings including user credentials can be specified on  
-`/opt/protonmail-cli/protonmail/settings.py`
 
 ## Usage
 
-Use from command line
+Use from command line after installation  
+
+*Settings including user credentials can be specified on*    
+`/opt/protonmail-cli/protonmail/settings.py`
 
 ```bash
-usage: protonmail-cli.py [-h] action ...
+# show full usage
+protonmail-cli --help
 
-ProtonMail CLI tool
+# list inbox - print latest mails
+protonmail-cli list
 
-optional arguments:
-  -h, --help  show this help message and exit
+# check inbox for new mails
+protonmail-cli check
 
-actions:
-  The high level actions available to ProtonMail CLI. For more detail, the
-  help flag is available for all actions.
-
-  action
-    list (l)  Print the latest mails title from the inbox.
-    check (c)
-              Check the inbox for new message and displays a system
-              notification.
-    send (s)  Send an email to the specified addresses.
-            optional arguments:
-              -t TO, --to TO        Recipient's address
-              -s SUBJECT, --subject SUBJECT
-                                    Subject
-              -b BODY, --body BODY  Body text
+# send mail
+protonmail-cli send \
+    -t "one@protonmail.com;two@protonmail.com" \
+    -s "my subject" \
+    -b "my mail message"
 ```
 
 Use as a package
-
-```
-git clone https://github.com/dimkouv/protonmail-cli
-pip3 install ./protonmail-cli
-```
 
 ```python3
 import protonmail
@@ -77,13 +66,13 @@ client.login("mymail@protonmail.com", "mypassword")
 # send mails
 client.send_mail(
     ["one@protonmail.com", "two@pm.me"],
-    "hello friend",
-    "I am writing you to let you know about..."
+    "subject",
+    "my mail message"
 )
 
 # read mails
 mails = client.read_mails()
 
 # check for new mail
-client.check_for_new_mail()
+has_new_mail = client.check_for_new_mail()
 ```
