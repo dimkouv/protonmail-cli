@@ -106,3 +106,4 @@ venv.bak/
 .vscode/
 
 .protonmail-cli-mails-hash
+.idea/

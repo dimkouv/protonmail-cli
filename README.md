@@ -22,7 +22,7 @@ rm geckodriver-*.tar.gz
 Protonmail CLI
 ```bash
 git clone https://github.com/dimkouv/protonmail-cli /opt/protonmail-cli
-ln -s /opt/protonmail-cli/protonmail-cli/protonmail-cli.py /bin/protonmail-cli
+ln -s /opt/protonmail-cli/protonmail-cli.py /bin/protonmail-cli
 
 pip3 install -r /opt/protonmail-cli/requirements.pip
 ```
@@ -30,7 +30,7 @@ pip3 install -r /opt/protonmail-cli/requirements.pip
 Test the installation by running `protonmail-cli --help` on a new terminal.
 
 Settings including user credentials can be specified on  
-`/opt/protonmail-cli/protonmail-cli/settings.py`
+`/opt/protonmail-cli/protonmail/settings.py`
 
 ## Usage
 
