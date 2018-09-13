@@ -33,10 +33,9 @@ pip3 install /opt/protonmail-cli
 
 ## Usage
 
-Use from command line after installation  
+### Use as a command line
 
-*Settings including user credentials can be specified on*    
-`/opt/protonmail-cli/protonmail/settings.py`
+`protonmail-cli` works with sub-command, like the cli command `git`. To see all possible usage, each sub-command have their own `--help` section.
 
 ```bash
 # show full usage
@@ -50,14 +49,26 @@ protonmail-cli check
 
 # send mail
 protonmail-cli send \
-    -t "one@protonmail.com;two@protonmail.com" \
+    -t "one@protonmail.com" \
+    -t "two@pm.me" \
     -s "my subject" \
     -b "my mail message"
 ```
 
-Use as a package
+*Global settings, including user credentials, can be specified on* `/opt/protonmail-cli/protonmail/settings.py`
 
-```python3
+User credentials can also be set in their own file, overriding those found inside `settings.py`. The global argument `--credential` allow you to set the file path of this config file. This would allow better security by allowing each user of a multi-users machine to keep their credentials inside their home folder. For even better security, `chmod 600` this file, so only the user launching the application can read it. What follow is an example credential file:
+
+```ini
+# The [credential] section is required, otherwise, credential values won't be parsed.
+[credential]
+username = mymail@protonmail.com
+password = mysafepass
+```
+
+### Use as a package
+
+```python
 import protonmail
 
 client = protonmail.core.ProtonmailClient()
