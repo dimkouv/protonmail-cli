@@ -34,6 +34,8 @@ Settings including user credentials can be specified on
 
 ## Usage
 
+Use from command line
+
 ```bash
 usage: protonmail-cli.py [-h] action ...
 
@@ -57,4 +59,31 @@ actions:
               -s SUBJECT, --subject SUBJECT
                                     Subject
               -b BODY, --body BODY  Body text
+```
+
+Use as a package
+
+```
+git clone https://github.com/dimkouv/protonmail-cli
+pip3 install ./protonmail-cli
+```
+
+```python3
+import protonmail
+
+client = protonmail.core.ProtonmailClient()
+client.login("mymail@protonmail.com", "mypassword")
+
+# send mails
+client.send_mail(
+    ["one@protonmail.com", "two@pm.me"],
+    "hello friend",
+    "I am writing you to let you know about..."
+)
+
+# read mails
+mails = client.read_mails()
+
+# check for new mail
+client.check_for_new_mail()
 ```
