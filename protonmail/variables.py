@@ -61,3 +61,6 @@ element_send_mail = dict(
     # CSS selector of the send email button.
     send_button_css=".btnSendMessage-btn-action"
 )
+
+# Other variables used by protonmail-cli
+mail_hash_filename = "mails_hash.txt"

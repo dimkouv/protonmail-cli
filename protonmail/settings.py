@@ -1,3 +1,5 @@
+import os
+
 # ProtonMail user name.
 username = "mymail@protonmail.com"
 
@@ -36,3 +38,6 @@ max_retries = 5
 # Do not hide the browser under xvfb, useful for debugging.
 show_browser = False
 
+# Directory to use for logging
+# user should have write access to this directory
+work_directory = os.getenv("HOME") + "/.protonmail-cli/"

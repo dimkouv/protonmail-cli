@@ -1,6 +1,5 @@
 import atexit
 import hashlib
-import os
 import time
 
 from bs4 import BeautifulSoup
@@ -15,19 +14,19 @@ from . import variables
 
 class ProtonmailClient:
     web_driver = None
+    virtual_display = None
 
     def __init__(self):
         utilities.log("Initiating ProtonMail client")
 
         try:
-            virtual_display = None
             if not settings.show_browser:
-                virtual_display = Display(visible=0, size=(1366, 768))
-                virtual_display.start()
+                self.virtual_display = Display(visible=0, size=(1366, 768))
+                self.virtual_display.start()
 
             self.web_driver = webdriver.Firefox()
 
-            atexit.register(self.stop, virtual_display=virtual_display)
+            atexit.register(self.destroy)
         except Exception as e:
             utilities.log(str(e), "ERROR")
 
@@ -125,14 +124,11 @@ class ProtonmailClient:
 
         """
         mails = self.read_mails()
-        hash_filename = ".protonmail-cli-mails-hash"
-        old_hash = ""
-        if os.path.exists(hash_filename):
-            old_hash = open(hash_filename, "r").readline()
+
+        old_hash = utilities.get_hash()
 
         new_hash = hashlib.sha256(str(mails).encode()).hexdigest()
-        with open(hash_filename, "w") as f:
-            f.write(new_hash)
+        utilities.write_hash(new_hash)
 
         if old_hash and new_hash != old_hash:
             return True
@@ -176,16 +172,17 @@ class ProtonmailClient:
 
         time.sleep(settings.load_wait)
 
-    def stop(self, virtual_display):
+    def destroy(self):
         """
         atexit handler; automatically executed upon normal interpreter termination.
 
-        :param virtual_display: 
-
+        Should be called after any work done with client
         """
         if self.web_driver is not None:
             self.web_driver.close()
             self.web_driver.quit()
+            self.web_driver = None
 
-        if virtual_display is not None:
-            virtual_display.stop()
+        if self.virtual_display is not None:
+            self.virtual_display.stop()
+            self.virtual_display = None

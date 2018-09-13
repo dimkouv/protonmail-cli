@@ -86,4 +86,17 @@ mails = client.read_mails()
 
 # check for new mail
 has_new_mail = client.has_new_mail()
+
+client.destroy()
+
+```
+
+
+## Testing
+```bash
+cd protonmail-cli
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install .
+python3 tests/core_test.py
 ```
