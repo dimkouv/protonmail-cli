@@ -1,18 +1,22 @@
 import setuptools
 
+metadata = {}
+with open("protonmail/metadata.py") as fh:
+    exec(fh.read(), metadata)
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="protonmail",
-    version="0.0.1",
-    author="dimkouv",
-    author_email="dimkouv@protonmail.com",
-    description=" Command line utility for https://protonmail.com",
+    name=metadata["name"],
+    version=metadata["__version__"],
+    author=metadata["author_name"],
+    author_email=metadata["author_email"],
+    description=metadata["description"],
     long_description=long_description,
     license='MIT',
     long_description_content_type="text/markdown",
-    url="https://github.com/dimkouv/protonmail-cli",
+    url=metadata["url"],
     python_requires='>=3',
     install_requires=[
         "beautifulsoup4",

@@ -47,9 +47,22 @@ def overwrite_settings(args):
 
 
 def parse_args():
+    metadata = {}
+    with open("protonmail/metadata.py") as fh:
+        exec(fh.read(), metadata)
+
     parser = argparse.ArgumentParser(
-        description="ProtonMail CLI tool",
-        epilog="Homepage: https://github.com/dimkouv/protonmail-cli")
+        description=metadata["description"],
+        epilog="Author: {name} <{email}> {url}".format(
+            name=metadata["author_name"],
+            email=metadata["author_email"],
+            url=metadata["url"]))
+
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version="%(prog)s {version}".format(version=metadata["__version__"]))
 
     parser.add_argument(
         "--credential",
