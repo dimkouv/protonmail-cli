@@ -22,7 +22,7 @@ logfile = ""
 # logfile = "protonmail-cli.log"
 
 # Enables logging from core functions
-core_logging = False
+core_logging = True
 
 # Number of rows to keep in the log file.
 logfile_rows_keep = 10000

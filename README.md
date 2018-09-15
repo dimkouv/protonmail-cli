@@ -35,7 +35,8 @@ pip3 install /opt/protonmail-cli
 
 ### Use as a command line
 
-`protonmail-cli` works with sub-command, like the cli command `git`. To see all possible usage, each sub-command have their own `--help` section.
+`protonmail-cli` works with sub-command, like the cli command `git`.  
+To see all possible usage, each sub-command have their own `--help` section.
 
 ```bash
 # show full usage
@@ -57,17 +58,33 @@ protonmail-cli send \
 
 *Global settings, including user credentials, can be specified on* `/opt/protonmail-cli/protonmail/settings.py`
 
-User credentials can also be set in their own file, overriding those found inside `settings.py`. The global argument `--credential` allow you to set the file path of this config file. This would allow better security by allowing each user of a multi-users machine to keep their credentials inside their home folder. For even better security, `chmod 600` this file, so only the user launching the application can read it. What follow is an example credential file:
+User credentials can also be set in their own file, overriding those found inside
+`settings.py`. The global argument `--credential` allow you to set the file path of
+this config file. This would allow better security by allowing each user of a multi-users
+ machine to keep their credentials inside their home folder.
 
+Example usage of separate credentials file
 ```ini
-# The [credential] section is required, otherwise, credential values won't be parsed.
+# /home/user/protonmailcli.ini
+
 [credential]
 username = mymail@protonmail.com
 password = mysafepass
 ```
+```bash
+protonmail-cli --credential /home/user/protonmailcli.ini list 
+```
+
+*For even better security, `chmod 600` this file, so only the user launching the
+ application can read it.*
 
 ### Use as a package
+Core functions can be called directly from your code instead of using `protonmail-cli`
+```bash
+pip3 install git+https://github.com/dimkouv/protonmail-cli
+```
 
+Usage example
 ```python
 import protonmail
 
