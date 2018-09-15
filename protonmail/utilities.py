@@ -47,7 +47,7 @@ def log(msg, reason="DEBUG"):
         print(log_entry)
 
 
-def wait_for_elem(web_driver, elem_val, elem_type="id"):
+def wait_for_elem(web_driver, elem_val, elem_type="id", max_retries=None):
     """web driver helper utility used to wait until the page is fully
     loaded.
     
@@ -60,13 +60,18 @@ def wait_for_elem(web_driver, elem_val, elem_type="id"):
 
     :param elem_val: param web_driver:
     :param elem_type: Default value = "id")
-    :param web_driver: 
+    :param web_driver:
+    :param max_retries: number of times to try to find the elem (overrides settings.max_retries)
 
     """
+    if max_retries is None:
+        max_retries = settings.max_retries
+
     retries = 0
+
     while True:
         try:
-            if retries > settings.max_retries:
+            if retries > max_retries:
                 return False
 
             if elem_type == "id":

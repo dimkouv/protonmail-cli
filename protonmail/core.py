@@ -93,15 +93,18 @@ class ProtonmailClient:
             utilities.log("Unable to login", "ERROR")
             raise Exception("Unable to login")
 
-    def read_mails(self):
+    def parse_mails(self):
         """
-        Reads and returns a list of Mails
-        web driver should be in Inbox or Spam page
-        :return:
+        Reads and returns a list of Mails inside the current web driver's page
+        :return: a list of Mail objects
         """
-        if not utilities.wait_for_elem(self.web_driver, variables.element_list_inbox['individual_email_soupclass'][1:],
-                                       "class"):
-            return []
+        if not utilities.wait_for_elem(self.web_driver, variables.element_list_inbox['email_list_wrapper_id'], "id"):
+            # for some reason the wrapper wasn't loaded
+            return None
+
+        utilities.wait_for_elem(
+            self.web_driver, variables.element_list_inbox["individual_email_soupclass"][1:], "class",
+            max_retries=3)
 
         soup = BeautifulSoup(self.web_driver.page_source, "html.parser")
         mails_soup = soup.select(variables.element_list_inbox['individual_email_soupclass'])
@@ -112,6 +115,7 @@ class ProtonmailClient:
         sender_name_class = variables.element_list_inbox['individual_email_sender_name_soupclass']
 
         for mail in mails_soup:
+            # @TODO mails without subject or title, etc.. are ignored
             try:
                 new_mail = Mail(
                     subject=mail.select(subject_class)[0].get("title"),
@@ -121,29 +125,31 @@ class ProtonmailClient:
                 )
                 mails.append(new_mail)
             except Exception as e:
-                utilities.log(str(e), "ERROR")
+                utilities.log("Skip mail... " + str(e), "ERROR")
                 continue
 
-        if settings.mails_read_num >= 0:
+        if settings.mails_read_num > 0:
             mails = mails[:settings.mails_read_num]
 
         if settings.date_order == "asc":
             return list(reversed(mails))
         return mails
 
-    def read_inbox(self):
-        """Read and return a list of latest mails in inbox."""
-        if self.web_driver.current_url != variables.inbox_url:
-            utilities.log("Opening %s" % variables.inbox_url)
-            self.web_driver.get(variables.inbox_url)
-        return self.read_mails()
+    def get_mails(self, page):
+        """
+        Get a list of mails that are into the given page
 
-    def read_spam(self):
-        """Read and return a list of the latest spam mails."""
-        if self.web_driver.current_url != variables.spam_url:
-            utilities.log("Opening %s" % variables.spam_url)
-            self.web_driver.get(variables.spam_url)
-        return self.read_mails()
+        :param page: One of the pages listed in variables.py > page_urls
+        :return: a list of Mail objects
+        """
+        url = variables.page_urls.get(page)
+        if not url:
+            raise ValueError("Page doesn't exist")
+
+        if self.web_driver.current_url != url:
+            utilities.log("Opening %s" % url)
+            self.web_driver.get(url)
+        return self.parse_mails()
 
     def has_new_mail(self):
         """Generates a unique hash from the mail inbox
@@ -156,7 +162,7 @@ class ProtonmailClient:
         changed and we'll get a new mail notification.
 
         """
-        mails = self.read_mails()
+        mails = self.get_mails("inbox")
 
         old_hash = utilities.get_hash()
 

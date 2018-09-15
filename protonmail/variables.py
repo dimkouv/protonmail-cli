@@ -4,11 +4,17 @@
 # Main URL for the login interface.
 url = "https://mail.protonmail.com/login"
 
-# URL of the inbox page
-inbox_url = "https://mail.protonmail.com/inbox"
-
-# URL of spam page
-spam_url = "https://mail.protonmail.com/spam"
+# Pages that contain mails and their urls
+page_urls = dict(
+    inbox="https://mail.protonmail.com/inbox",
+    drafts="https://mail.protonmail.com/drafts",
+    sent="https://mail.protonmail.com/sent",
+    starred="https://mail.protonmail.com/sent",
+    archive="https://mail.protonmail.com/archive",
+    spam="https://mail.protonmail.com/spam",
+    trash="https://mail.protonmail.com/trash",
+    allmail="https://mail.protonmail.com/allmail"
+)
 
 # login variables
 element_login = dict(
@@ -32,6 +38,9 @@ element_twofactor = dict(
 
 # list-inbox variables
 element_list_inbox = dict(
+    # ID of the wrapper for conversations list
+    email_list_wrapper_id="conversation-list-columns",
+
     # Class of the element representing an email in the conversation frame.
     individual_email_soupclass=".conversation-meta",
 

@@ -39,10 +39,8 @@ To see all possible usage, each sub-command have their own `--help` section.
 protonmail-cli --help
 
 # list inbox - print latest mails
-protonmail-cli list
-
-# list spam - print latest spam mails
-protonmail-cli spam
+protonmail-cli list -t inbox
+protonmail-cli list -t spam
 
 # check inbox for new mails
 protonmail-cli check
@@ -98,10 +96,8 @@ client.send_mail(
 )
 
 # read mails
-mails = client.read_mails()
-
-# read spam
-spam_mails = client.read_spam()
+mails = client.get_mails("inbox")
+spam = client.get_mails("spam")
 
 # check for new mail
 has_new_mail = client.has_new_mail()

@@ -8,13 +8,9 @@ from protonmail import core, settings, utilities, metadata
 
 
 def subcommand_list(args):
-    for mail in client.read_mails():
+    for mail in client.get_mails(args.type):
         print(mail)
 
-
-def subcommand_spam(args):
-    for mail in client.read_spam():
-        print(mail)
 
 def subcommand_check(args):
     while True:
@@ -78,19 +74,19 @@ def parse_args():
     # Required to be set after the creation because of bug: https://stackoverflow.com/a/18283730
     subparsers.required = True
 
-    # List inbox arguments
+    # List mails arguments
     list_inbox_parser = subparsers.add_parser(
         "list",
         aliases=["l"],
-        help="Print the latest mails title from the inbox.")
+        help="Print the latest mails titles.")
     list_inbox_parser.set_defaults(func=subcommand_list)
 
-    # List spam arguments
-    list_inbox_parser = subparsers.add_parser(
-        "spam",
-        aliases=["sp"],
-        help="Print the latest mails title from spam.")
-    list_inbox_parser.set_defaults(func=subcommand_spam)
+    list_inbox_parser.add_argument(
+        "-t",
+        "--type",
+        help="Which directory you want to list: inbox drafts sent starred archive spam trash allmail",
+        required=True
+    )
 
     # Check inbox arguments
     check_inbox_parser = subparsers.add_parser(
