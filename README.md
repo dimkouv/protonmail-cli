@@ -32,7 +32,7 @@ pip3 install -r /opt/protonmail-cli/requirements.pip
 ### Use as a command line
 
 `protonmail-cli` works with sub-command, like the cli command `git`.  
-To see all possible usage, each sub-command have their own `--help` section.
+To see all possible usage, each sub-command has its own `--help` section.
 
 ```bash
 # show full usage
