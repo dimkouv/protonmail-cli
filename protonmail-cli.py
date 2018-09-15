@@ -4,7 +4,7 @@ import configparser
 import os
 import time
 
-from protonmail import core, settings, utilities
+from protonmail import core, settings, utilities, metadata
 
 
 def subcommand_list(args):
@@ -51,22 +51,18 @@ def overwrite_settings(args):
 
 
 def parse_args():
-    metadata = {}
-    with open("protonmail/metadata.py") as fh:
-        exec(fh.read(), metadata)
-
     parser = argparse.ArgumentParser(
-        description=metadata["description"],
+        description=metadata.description,
         epilog="Author: {name} <{email}> {url}".format(
-            name=metadata["author_name"],
-            email=metadata["author_email"],
-            url=metadata["url"]))
+            name=metadata.author_name,
+            email=metadata.author_email,
+            url=metadata.url))
 
     parser.add_argument(
         "-v",
         "--version",
         action="version",
-        version="%(prog)s {version}".format(version=metadata["__version__"]))
+        version="%(prog)s {version}".format(version=metadata.__version__))
 
     parser.add_argument(
         "--credential",

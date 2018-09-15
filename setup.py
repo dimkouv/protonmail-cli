@@ -1,22 +1,20 @@
 import setuptools
 
-metadata = {}
-with open("protonmail/metadata.py") as fh:
-    exec(fh.read(), metadata)
+from protonmail import metadata
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name=metadata["name"],
-    version=metadata["__version__"],
-    author=metadata["author_name"],
-    author_email=metadata["author_email"],
-    description=metadata["description"],
+    name=metadata.name,
+    version=metadata.__version__,
+    author=metadata.author_name,
+    author_email=metadata.author_email,
+    description=metadata.description,
     long_description=long_description,
     license='MIT',
     long_description_content_type="text/markdown",
-    url=metadata["url"],
+    url=metadata.url,
     python_requires='>=3',
     install_requires=[
         "beautifulsoup4",
