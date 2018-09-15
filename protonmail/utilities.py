@@ -64,11 +64,10 @@ def wait_for_elem(web_driver, elem_val, elem_type="id"):
 
     """
     retries = 0
-    time.sleep(0.5)
     while True:
         try:
             if retries > settings.max_retries:
-                break
+                return False
 
             if elem_type == "id":
                 web_driver.find_element_by_id(elem_val)
@@ -78,14 +77,14 @@ def wait_for_elem(web_driver, elem_val, elem_type="id"):
                 web_driver.find_element_by_css_selector(elem_val)
             else:
                 raise ValueError("Unknown elem_type")
+
+            time.sleep(0.2)  # add a little extra delay for all elements to load
             return True
 
         except NoSuchElementException:
-            log("  waiting for " + elem_type + ":" + elem_val + "...")
+            log("(%d/%d)  waiting for %s:%s..." % (retries, settings.max_retries, elem_type, elem_val))
             retries += 1
             time.sleep(settings.load_wait)
-
-    return False
 
 
 def write_hash(new_hash):

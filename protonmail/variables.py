@@ -4,6 +4,12 @@
 # Main URL for the login interface.
 url = "https://mail.protonmail.com/login"
 
+# URL of the inbox page
+inbox_url = "https://mail.protonmail.com/inbox"
+
+# URL of spam page
+spam_url = "https://mail.protonmail.com/spam"
+
 # login variables
 element_login = dict(
     # ID of the username element of the login page.
@@ -13,7 +19,7 @@ element_login = dict(
     password_id="password",
 
     # Class of an element to check to validate that the user login page completed.
-    after_login_detection_class="conversation-meta"
+    after_login_detection_class="sidebar"
 )
 
 element_twofactor = dict(

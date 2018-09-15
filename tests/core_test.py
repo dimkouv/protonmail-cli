@@ -11,18 +11,18 @@ class CoreTest(unittest.TestCase):
     settings.core_logging = True
 
     print("Give ProtonMail credentials to initiate tests,\n",
-          "use an account that has at least one mail in inbox.\n")
+          "use an account that has at least one mail in inbox and spam.\n")
 
     username = input("ProtonMail username: ")
     password = getpass("ProtonMail password: ")
     test_address = input("Give a mail address to send test mail: ")
 
-    def test_init_client(self):
+    def test_0_init_client(self):
         self.assertNotEqual(self.client.web_driver, None)
 
-    def test_login(self):
+    def test_1_login(self):
         try:
-            self.client.login(self.username, "a wrong password")
+            self.client.login("wrong username", "wrong password")
             self.fail("login() should fail but it appears that we're logged in")
         except Exception as e:
             pass
@@ -32,7 +32,7 @@ class CoreTest(unittest.TestCase):
         except Exception as e:
             self.fail("login() unable to login with correct credentials:" + str(e))
 
-    def test_read_mails(self):
+    def test_2_read_mails(self):
         try:
             mails = self.client.read_mails()
             if not mails or len(mails) == 0:
@@ -40,7 +40,15 @@ class CoreTest(unittest.TestCase):
         except Exception as e:
             self.fail("read_mails() unable to read any mail: " + str(e))
 
-    def test_has_new_mail(self):
+    def test_3_read_spam(self):
+        try:
+            mails = self.client.read_spam()
+            if not mails or len(mails) == 0:
+                raise ValueError("Unable to read any spam mail")
+        except Exception as e:
+            self.fail("read_mails() unable to read any spam mail: " + str(e))
+
+    def test_4_has_new_mail(self):
         # generate a hash of the current inbox
         self.client.has_new_mail()
 
@@ -52,14 +60,14 @@ class CoreTest(unittest.TestCase):
         utilities.write_hash("hello_friend_this_is_random")
         self.assertEqual(self.client.has_new_mail(), True)
 
-    def test_send_mail(self):
+    def test_5_send_mail(self):
         self.client.send_mail(
             [self.test_address],
             "[protonmail-cli] success",
             "[Success] This message was automatically send from protonmail-cli tests."
         )
 
-    def test_stop(self):
+    def test_6_stop(self):
         self.client.destroy()
 
         self.assertEqual(self.client.web_driver, None)

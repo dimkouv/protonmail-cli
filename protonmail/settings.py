@@ -29,11 +29,11 @@ logfile_rows_keep = 10000
 
 # Time to wait for a page to load in seconds.
 # Increase in case of timeout errors.
-load_wait = 5
+load_wait = 1
 
 # Number of retries before exit.
 # Increase in case of timeout errors.
-max_retries = 5
+max_retries = 20
 
 # Do not hide the browser under xvfb, useful for debugging.
 show_browser = False

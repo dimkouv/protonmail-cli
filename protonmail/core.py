@@ -56,11 +56,7 @@ class ProtonmailClient:
         :param password:    your ProtonMail password
 
         """
-
-        def do_login():
-            """
-            :returns: True on successful login else False
-            """
+        try:
             utilities.log("Open login page")
             self.web_driver.get(variables.url)
             utilities.wait_for_elem(self.web_driver, variables.element_login['username_id'], "id")
@@ -88,20 +84,25 @@ class ProtonmailClient:
                 two_factor_input.send_keys(input("Enter two-factor authentication code: "))
                 two_factor_input.send_keys(Keys.RETURN)
 
-            return utilities.wait_for_elem(
-                self.web_driver, variables.element_login['after_login_detection_class'], "class")
-
-        if do_login():
-            utilities.log("Logged in successfully")
-        else:
+            if utilities.wait_for_elem(self.web_driver, variables.element_login['after_login_detection_class'],
+                                       "class"):
+                utilities.log("Logged in successfully")
+            else:
+                raise Exception()
+        except Exception as e:
             utilities.log("Unable to login", "ERROR")
             raise Exception("Unable to login")
 
     def read_mails(self):
-        """Read and return a list of mails from the main
-        ProtonMail page (after login).
-
         """
+        Reads and returns a list of Mails
+        web driver should be in Inbox or Spam page
+        :return:
+        """
+        if not utilities.wait_for_elem(self.web_driver, variables.element_list_inbox['individual_email_soupclass'][1:],
+                                       "class"):
+            return []
+
         soup = BeautifulSoup(self.web_driver.page_source, "html.parser")
         mails_soup = soup.select(variables.element_list_inbox['individual_email_soupclass'])
 
@@ -130,6 +131,20 @@ class ProtonmailClient:
             return list(reversed(mails))
         return mails
 
+    def read_inbox(self):
+        """Read and return a list of latest mails in inbox."""
+        if self.web_driver.current_url != variables.inbox_url:
+            utilities.log("Opening %s" % variables.inbox_url)
+            self.web_driver.get(variables.inbox_url)
+        return self.read_mails()
+
+    def read_spam(self):
+        """Read and return a list of the latest spam mails."""
+        if self.web_driver.current_url != variables.spam_url:
+            utilities.log("Opening %s" % variables.spam_url)
+            self.web_driver.get(variables.spam_url)
+        return self.read_mails()
+
     def has_new_mail(self):
         """Generates a unique hash from the mail inbox
         If the hash is different from the previous call of this function
@@ -145,7 +160,12 @@ class ProtonmailClient:
 
         old_hash = utilities.get_hash()
 
-        new_hash = hashlib.sha256(str(mails).encode()).hexdigest()
+        mails_str = ""
+        for mail in mails:
+            mails_str += str(mail)
+            mails_str += str(mail)
+
+        new_hash = hashlib.sha256(mails_str.encode()).hexdigest()
         utilities.write_hash(new_hash)
 
         if old_hash and new_hash != old_hash:

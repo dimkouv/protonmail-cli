@@ -41,6 +41,9 @@ protonmail-cli --help
 # list inbox - print latest mails
 protonmail-cli list
 
+# list spam - print latest spam mails
+protonmail-cli spam
+
 # check inbox for new mails
 protonmail-cli check
 
@@ -96,6 +99,9 @@ client.send_mail(
 
 # read mails
 mails = client.read_mails()
+
+# read spam
+spam_mails = client.read_spam()
 
 # check for new mail
 has_new_mail = client.has_new_mail()

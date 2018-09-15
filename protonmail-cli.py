@@ -12,6 +12,10 @@ def subcommand_list(args):
         print(mail)
 
 
+def subcommand_spam(args):
+    for mail in client.read_spam():
+        print(mail)
+
 def subcommand_check(args):
     while True:
         if client.has_new_mail():
@@ -84,6 +88,13 @@ def parse_args():
         aliases=["l"],
         help="Print the latest mails title from the inbox.")
     list_inbox_parser.set_defaults(func=subcommand_list)
+
+    # List spam arguments
+    list_inbox_parser = subparsers.add_parser(
+        "spam",
+        aliases=["sp"],
+        help="Print the latest mails title from spam.")
+    list_inbox_parser.set_defaults(func=subcommand_spam)
 
     # Check inbox arguments
     check_inbox_parser = subparsers.add_parser(
