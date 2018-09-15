@@ -23,12 +23,8 @@ Protonmail CLI
 ```bash
 git clone https://github.com/dimkouv/protonmail-cli /opt/protonmail-cli
 
-# install globally for usage from terminal
 ln -s /opt/protonmail-cli/protonmail-cli.py /bin/protonmail-cli
 pip3 install -r /opt/protonmail-cli/requirements.pip
-
-# install as a python3 package
-pip3 install /opt/protonmail-cli
 ```
 
 ## Usage
