@@ -1,4 +1,10 @@
 # ProtonMail CLI
+
+![protonmail-cli v0.0.2](https://img.shields.io/badge/protonmail--cli-v0.0.2-green.svg)
+![MIT License](https://img.shields.io/dub/l/vibe-d.svg)
+![Python 3](https://img.shields.io/badge/python-%3E%3D3-blue.svg)
+![OS](https://img.shields.io/badge/os-unix-lightgrey.svg)
+
 Command line utility for https://protonmail.com
 
 ## Installation
