@@ -12,8 +12,8 @@ from . import settings, variables
 def tail(filename, n):
     """Keep last n lines of file specified by :filename.
 
-    :param filename: param n:
-    :param n: 
+    :param filename: <str> Filename to apply tail on
+    :param n: <int> Number of lines to keep
 
     """
     log_file_content = open(filename, "r").readlines()
@@ -50,12 +50,12 @@ def log(msg, reason="DEBUG"):
 def wait_for_elem(web_driver, elem_val, elem_type="id", max_retries=None):
     """web driver helper utility used to wait until the page is fully
     loaded.
-    
+
     Tries to find the element specified by :elem_val
     where :elem_val can be of :elem_type 'id', 'class' or 'css'.
-    
+
     Returns True if element was found in time else False
-    
+
     After :settings.max_retries number of times stops trying.
 
     :param elem_val: param web_driver:

@@ -19,7 +19,11 @@ Geckodriver
 # Find your release: https://github.com/mozilla/geckodriver/releases
 
 # for linux x64
-wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
+wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz
+# for arm 7
+wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-arm7hf.tar.gz
+# for linux x32
+wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux32.tar.gz
 
 tar -xvf geckodriver-*.tar.gz -C /bin/
 rm geckodriver-*.tar.gz
@@ -36,13 +40,10 @@ pip3 install -r /opt/protonmail-cli/requirements.pip
 ## Usage
 
 ### Use as a command line
-
-`protonmail-cli` works with sub-command, like the cli command `git`.  
-To see all possible usage, each sub-command has its own `--help` section.
-
 ```bash
 # show full usage
 protonmail-cli --help
+# each sub-command has its own `--help` section.
 
 # list inbox - print latest mails
 protonmail-cli list -t inbox
@@ -65,6 +66,8 @@ User credentials can also be set in their own file, overriding those found insid
 `settings.py`. The global argument `--credential` allow you to set the file path of
 this config file. This would allow better security by allowing each user of a multi-users
  machine to keep their credentials inside their home folder.
+
+If user credentials are not specified in `settings.py` or `credentials file` then cli prompts you to type them.
 
 Example usage of separate credentials file
 ```ini

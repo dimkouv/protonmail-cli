@@ -1,10 +1,10 @@
 import os
 
-# ProtonMail user name.
-username = "mymail@protonmail.com"
+# ProtonMail user name or email.
+username = ""
 
 # ProtonMail user password.
-password = "mysafepass"
+password = ""
 
 # Set date order
 # "asc | des"

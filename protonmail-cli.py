@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 import argparse
 import configparser
+import getpass
 import os
 import time
 
-from protonmail import core, settings, utilities, metadata
+from protonmail import core, metadata, settings, utilities
 
 
 def subcommand_list(args):
@@ -44,6 +45,12 @@ def overwrite_settings(args):
             if "username" in config["credential"] and "password" in config["credential"]:
                 settings.username = config["credential"]["username"]
                 settings.password = config["credential"]["password"]
+
+    if not settings.username:
+        settings.username = input("ProtonMail email or username: ")
+
+    if not settings.password:
+        settings.password = getpass.getpass("ProtonMail password: ")
 
 
 def parse_args():

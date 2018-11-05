@@ -7,9 +7,7 @@ from pyvirtualdisplay.display import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from . import settings
-from . import utilities
-from . import variables
+from . import settings, utilities, variables
 
 
 class Mail:
