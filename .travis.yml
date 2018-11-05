@@ -10,7 +10,7 @@ python:
 
 install:
   - pip install -r requirements.pip
-  - pip install.
+  - pip install .
 
 script:
   - python tests/core_test.py
