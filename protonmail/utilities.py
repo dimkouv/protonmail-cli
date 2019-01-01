@@ -16,8 +16,12 @@ def tail(filename, n):
     :param n: <int> Number of lines to keep
 
     """
-    log_file_content = open(filename, "r").readlines()
-    open(filename, "w").writelines(log_file_content[:n])
+    lines = []
+    with open(filename, "r") as file:
+        lines = file.readlines()
+
+    with open(filename, "w") as file:
+        file.writelines(lines[-n:])
 
 
 def log(msg, reason="DEBUG"):
