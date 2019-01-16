@@ -8,10 +8,11 @@
 Command line utility for https://protonmail.com
 
 ## Installation
-System dependencies
+System dependencies *(Probably everything's already installed)*
 ```bash
 apt install -y xvfb python3-pip firefox                 # on debian
 dnf install xorg-x11-server-Xvfb python3-pip firefox    # on fedora
+pacman -S xorg-server-xvfb python-pip firefox wget      # on arch
 ```
 
 Geckodriver
