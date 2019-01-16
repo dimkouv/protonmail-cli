@@ -1,6 +1,8 @@
 import atexit
 import hashlib
 import time
+import sys
+import getpass
 
 from bs4 import BeautifulSoup
 from pyvirtualdisplay.display import Display
@@ -228,3 +230,154 @@ class ProtonmailClient:
         if self.virtual_display is not None:
             self.virtual_display.stop()
             self.virtual_display = None
+
+
+class InteractiveSession:
+    def __init__(self):
+        # disable logging
+        # all logging will happen into this methods
+        settings.log_level = ""
+
+        self.is_logged_in = False
+        self.username = ""
+        self.client = ProtonmailClient()
+    
+    def login(self):
+        self.username = input("ProtonMail email or username: ")
+        password = getpass.getpass("ProtonMail password: ")
+        print("Loading...")
+        try:
+            self.client.login(self.username, password)
+            self.is_logged_in = True
+            print("Welcome " + self.username)
+            self.display()
+        except Exception as ignored_err:
+            print("Unable to login, check your credentials.")
+    
+    def exit(self):
+        print("Exiting...")
+        self.client.destroy()
+        sys.exit()
+
+    def logout(self):
+        print("Loading...")
+        self.client.destroy()
+        self.is_logged_in = False
+        print("You've been logged out.")
+        self.display()
+
+    def show(self, page):
+        for mail in self.client.get_mails(page):
+            print(mail)
+
+    def show_inbox(self):
+        self.show("inbox")
+
+    def show_drafts(self):
+        self.show("drafts")
+
+    def show_sent(self):
+        self.show("sent")
+    
+    def show_starred(self):
+        self.show("starred")
+    
+    def show_archive(self):
+        self.show("archive")
+    
+    def show_spam(self):
+        self.show("spam")
+    
+    def show_trash(self):
+        self.show("trash")
+
+    def show_all(self):
+        self.show("allmail")
+
+    def get_options_for_any(self):
+        return {
+            "M": {
+                "text": "Shows this menu",
+                "function": self.display
+            },
+            "X": {
+                "text": "Exit",
+                "function": self.exit
+            }
+        }
+
+    def get_options_for_non_anonymous(self):
+        options = self.get_options_for_any()
+        options["E"] = {
+            "text": "Logout",
+            "function": self.logout
+        }
+        options["INBOX"] = {
+            "text": "Show inbox mails",
+            "function": self.show_inbox
+        }
+        options["DRAFTS"] = {
+            "text": "Show drafts",
+            "function": self.show_drafts
+        }
+        options["SENT"] = {
+            "text": "Show sent mails",
+            "function": self.show_sent
+        }
+        options["STARRED"] = {
+            "text": "Show starred mails",
+            "function": self.show_starred
+        }
+        options["ARCHIVE"] = {
+            "text": "Show archived mails",
+            "function": self.show_archive
+        }
+        options["SPAM"] = {
+            "text": "Show spam mails",
+            "function": self.show_spam
+        }
+        options["TRASH"] = {
+            "text": "Show trash mails",
+            "function": self.show_trash
+        }
+        options["ALLMAIL"] = {
+            "text": "Show all mails",
+            "function": self.show_all
+        }
+
+        return options
+
+    def get_options_for_anonymous(self):
+        options = self.get_options_for_any()
+        options["L"] = {
+            "text": "Login",
+            "function": self.login
+        }
+        return options
+
+    def get_options(self):
+        return self.get_options_for_non_anonymous() if self.is_logged_in else self.get_options_for_anonymous()
+
+    def start(self):
+        self.display()
+        while True:
+            options = self.get_options()
+            choice = input("> ").upper()
+
+            if choice in options:
+                options[choice]["function"]()
+            else:
+                self.display()
+
+    def display(self):
+        print("\n[{username}] {message}".format(
+            username=self.username if self.is_logged_in else "Anonymous",
+            message="Choose an option from the menu"
+        ))
+
+        options = self.get_options()
+        for choice in options:
+            print("{option_id: <12}: {option_text}".format(
+                option_id=choice.lower(),
+                option_text=options[choice]["text"]
+            ))

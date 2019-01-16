@@ -3,6 +3,7 @@ import argparse
 import configparser
 import getpass
 import os
+import sys
 import time
 
 from protonmail import core, metadata, settings, utilities
@@ -132,11 +133,16 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    args = parse_args()
+    if len(sys.argv) > 1:
+        args = parse_args()
 
-    client = core.ProtonmailClient()
-    client.login(
-        settings.username,
-        settings.password,
-    )
-    args.func(args)
+        client = core.ProtonmailClient()
+        client.login(
+            settings.username,
+            settings.password,
+        )
+        args.func(args)
+    else:
+        # run an interactive session
+        session = core.InteractiveSession()
+        session.start()

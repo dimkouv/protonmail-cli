@@ -85,6 +85,37 @@ protonmail-cli --credential /home/user/protonmailcli.ini list
 *For even better security, `chmod 600` this file, so only the user launching the
  application can read it.*
 
+### Run in an interactive session
+Simply run `protonmail-cli` without any parameters to open an interactive session.
+
+```bash
+[Anonymous] Choose an option from the menu
+m           : Shows this menu
+x           : Exit
+l           : Login
+> l
+ProtonMail email or username: dimkouv
+ProtonMail password:
+Loading...
+Welcome dimkouv
+
+[dimkouv] Choose an option from the menu
+m           : Shows this menu
+x           : Exit
+e           : Logout
+inbox       : Show inbox mails
+drafts      : Show drafts
+sent        : Show sent mails
+starred     : Show starred mails
+archive     : Show archived mails
+spam        : Show spam mails
+trash       : Show trash mails
+allmail     : Show all mails
+>
+```
+
+
+
 ### Use as a package
 Core functions can be called directly from your code instead of using `protonmail-cli`
 ```bash
