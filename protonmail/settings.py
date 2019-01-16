@@ -22,7 +22,11 @@ logfile = ""
 # logfile = "protonmail-cli.log"
 
 # Enables logging from core functions
-core_logging = True
+# Choices are: ['', 'INFO', 'DEBUG']
+# EMPTY: Display nothing at all
+# INFO: Displays minimal messages that indicate progress and/or action results
+# DEBUG: Displays many information about what's going under the hood
+log_level = "INFO" 
 
 # Number of rows to keep in the log file.
 logfile_rows_keep = 10000

@@ -33,7 +33,7 @@ def subcommand_send(args):
         client.send_mail(args.to, args.subject, args.body)
         print("Mail sent")
     except Exception as e:
-        utilities.log(str(e), "ERROR")
+        utilities.log("Unable to send email. Reason: " + str(e))
 
 
 def overwrite_settings(args):

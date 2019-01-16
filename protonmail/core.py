@@ -43,7 +43,7 @@ class ProtonmailClient:
 
             atexit.register(self.destroy)
         except Exception as e:
-            utilities.log(str(e), "ERROR")
+            utilities.log("Unable to initiate Protonmail Client. Reason: " + str(e))
 
     def login(self, username, password):
         """Login to ProtonMail panel
@@ -55,11 +55,11 @@ class ProtonmailClient:
 
         """
         try:
-            utilities.log("Open login page")
+            utilities.log("Logging in...")
             self.web_driver.get(variables.url)
             utilities.wait_for_elem(self.web_driver, variables.element_login['username_id'], "id")
 
-            utilities.log("Login page loaded")
+            utilities.log("Login page loaded...", "DEBUG")
             username_input = self.web_driver.find_element_by_id(variables.element_login['username_id'])
             password_input = self.web_driver.find_element_by_id(variables.element_login['password_id'])
 
@@ -67,7 +67,7 @@ class ProtonmailClient:
             password_input.send_keys(password)
 
             password_input.send_keys(Keys.RETURN)
-            utilities.log("Login credentials sent [" + username + "]")
+            utilities.log("Login credentials sent [" + username + "]", "DEBUG")
 
             time.sleep(1)
 
@@ -77,7 +77,7 @@ class ProtonmailClient:
                 two_factor = True
 
             if two_factor:
-                utilities.log("Two-factor authentication enabled")
+                utilities.log("Two-factor authentication enabled", "DEBUG")
                 two_factor_input = self.web_driver.find_element_by_id(variables.element_twofactor['code_id'])
                 two_factor_input.send_keys(input("Enter two-factor authentication code: "))
                 two_factor_input.send_keys(Keys.RETURN)
@@ -88,7 +88,7 @@ class ProtonmailClient:
             else:
                 raise Exception()
         except Exception as e:
-            utilities.log("Unable to login", "ERROR")
+            utilities.log("Login failed!")
             raise Exception("Unable to login")
 
     def parse_mails(self):
@@ -123,7 +123,7 @@ class ProtonmailClient:
                 )
                 mails.append(new_mail)
             except Exception as e:
-                utilities.log("Skip mail... " + str(e), "ERROR")
+                utilities.log("Skip mail... " + str(e))
                 continue
 
         if settings.mails_read_num > 0:

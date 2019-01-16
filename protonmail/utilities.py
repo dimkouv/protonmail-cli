@@ -24,16 +24,21 @@ def tail(filename, n):
         file.writelines(lines[-n:])
 
 
-def log(msg, reason="DEBUG"):
+def log(msg, reason="INFO"):
     """If settings.logfile is set write :msg in logfile else
     write in standard output.
 
-    :param msg: param reason:  (Default value = "DEBUG")
-    :param reason:  (Default value = "DEBUG")
-
+    :param msg: The message that will be logged - printed
+    :param reason: Reason can be one of ["INFO", "DEBUG", "ERROR"]
+                   :core_logging setting should be true for displaying "INFO"
+                   :debug_logging setting should be true for "INFO", DEBUG" and "ERROR"
     """
-    if not settings.core_logging:
-        # logging is disabled
+    if settings.log_level not in ["", "INFO", "DEBUG", "ERROR"]:
+        print("Warning: log_level invalid (falling back to 'INFO'). Use one of ['INFO', 'DEBUG', '']")
+        settings.log_level = "INFO"
+    if not settings.log_level:
+        return
+    if settings.log_level == "INFO" and reason == "DEBUG":
         return
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -91,7 +96,7 @@ def wait_for_elem(web_driver, elem_val, elem_type="id", max_retries=None):
             return True
 
         except NoSuchElementException:
-            log("(%d/%d)  waiting for %s:%s..." % (retries, settings.max_retries, elem_type, elem_val))
+            log("(%d/%d)  waiting for %s:%s..." % (retries, settings.max_retries, elem_type, elem_val), "DEBUG")
             retries += 1
             time.sleep(settings.load_wait)
 
