@@ -6,7 +6,7 @@ import os
 import sys
 import time
 
-from protonmail import core, metadata, settings, utilities
+from protonmail import core, metadata, settings, utilities, interactive
 
 
 def subcommand_list(args):
@@ -144,5 +144,5 @@ if __name__ == "__main__":
         args.func(args)
     else:
         # run an interactive session
-        session = core.InteractiveSession()
+        session = interactive.InteractiveSession()
         session.start()
