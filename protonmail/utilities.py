@@ -124,3 +124,12 @@ def get_hash():
         with open(hash_file_path, "r") as f:
             return f.readline()
     return None
+
+
+def validate():
+    """Asks users type yes or no in order to validate his input
+
+    :return: bool
+    """
+
+    return input("Are you sure? [Y/n]").lower() not in {"n", "no", "not"}

@@ -1,7 +1,7 @@
 import getpass
 import sys
 
-from . import core, settings
+from . import core, settings, utilities
 
 
 class InteractiveSession:
@@ -50,8 +50,7 @@ class InteractiveSession:
                 recipients = input("Give recipient address(es separed with ;).\n").split(";")
                 recipients = [r.strip() for r in recipients]
                 print("\tReceivers:", recipients)
-                validate = input("Are you sure? [Y/n]").lower()
-                if validate != "n":
+                if utilities.validate():
                     break
             return recipients
 
@@ -60,8 +59,7 @@ class InteractiveSession:
             while True:
                 subject = input("Subject: ")
                 print("\tSubject:", subject)
-                validate = input("Are you sure? [Y/n]").lower()
-                if validate != "n":
+                if utilities.validate():
                     break
             return subject
         
@@ -70,8 +68,7 @@ class InteractiveSession:
             while True:
                 message = input("Mail content:\n")
                 print("\tMail content:\n", "\t", message)
-                validate = input("Are you sure? [Y/n]").lower()
-                if validate != "n":
+                if utilities.validate():
                     break
             return message
 
@@ -79,17 +76,11 @@ class InteractiveSession:
         subject = read_subject()
         message = read_message()
 
-        print("-" * 30)
-        print("TO:", recipients)
-        print("SUBJECT:", subject)
-        print(message)
-        print("-" * 30)
-
-        validate = input("[SEND] Are you sure? [Y/n]").lower()
-        if validate != "n":
-            print("Email wasn't sent...")
-        else:
+        print("-" * 30, "\nTO:", recipients, "\nSUBJECT:", subject, "\n", message, "-" * 30)
+        if utilities.validate():
             self.client.send_mail(recipients, subject, message)
+        else:
+            print("Email cancelled")
 
     def get_options_for_any(self):
         return {
@@ -113,39 +104,13 @@ class InteractiveSession:
             "text": "Send an email",
             "function": lambda: self.send()
         }
-        options["inbox"] = {
-            "text": "Show inbox mails",
-            "function": lambda: self.show("inbox")
-        }
-        options["drafts"] = {
-            "text": "Show drafts",
-            "function": lambda: self.show("drafts")
-        }
-        options["sent"] = {
-            "text": "Show sent mails",
-            "function": lambda: self.show("sent")
-        }
-        options["starred"] = {
-            "text": "Show starred mails",
-            "function": lambda: self.show("starred")
-        }
-        options["archive"] = {
-            "text": "Show archived mails",
-            "function": lambda: self.show("archive")
-        }
-        options["spam"] = {
-            "text": "Show spam mails",
-            "function": lambda: self.show("spam")
-        }
-        options["trash"] = {
-            "text": "Show trash mails",
-            "function": lambda: self.show("trash")
-        }
-        options["allmail"] = {
-            "text": "Show all mails",
-            "function": lambda: self.show("allmail")
-        }
 
+        show_options = ["inbox", "drafts", "sent", "starred", "archive", "spam", "trash", "allmail"]
+        for opt in show_options:
+            options[opt] = {
+                "text": "Show " + opt.title() + " emails.",
+                "function": lambda: self.show(opt)
+            }
         return options
 
     def get_options_for_anonymous(self):
