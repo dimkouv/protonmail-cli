@@ -89,7 +89,7 @@ class ProtonmailClient:
                 utilities.log("Logged in successfully")
             else:
                 raise Exception()
-        except Exception as e:
+        except Exception as ignored_err:
             utilities.log("Login failed!")
             raise Exception("Unable to login")
 
@@ -252,7 +252,7 @@ class InteractiveSession:
             print("Welcome " + self.username)
             self.display()
         except Exception as ignored_err:
-            print("Unable to login, check your credentials.")
+            print("Unable to login, check your credentials or your connection.")
     
     def exit(self):
         print("Exiting...")
@@ -269,6 +269,55 @@ class InteractiveSession:
     def show(self, page):
         for mail in self.client.get_mails(page):
             print(mail)
+    
+    def send(self):
+        """ Send mail """
+        def read_recipients():
+            recipients = []
+            while True:
+                recipients = input("Give recipient address(es separed with ;).\n").split(";")
+                recipients = [r.strip() for r in recipients]
+                print("\tReceivers:", recipients)
+                validate = input("Are you sure? [Y/n]").lower()
+                if validate != "n":
+                    break
+            return recipients
+
+        def read_subject():
+            subject = ""
+            while True:
+                subject = input("Subject: ")
+                print("\tSubject:", subject)
+                validate = input("Are you sure? [Y/n]").lower()
+                if validate != "n":
+                    break
+            return subject
+        
+        def read_message():
+            message = ""
+            while True:
+                message = input("Mail content:\n")
+                print("\tMail content:\n", "\t", message)
+                validate = input("Are you sure? [Y/n]").lower()
+                if validate != "n":
+                    break
+            return message
+
+        recipients = read_recipients()
+        subject = read_subject()
+        message = read_message()
+
+        print("-" * 30)
+        print("TO:", recipients)
+        print("SUBJECT:", subject)
+        print(message)
+        print("-" * 30)
+
+        validate = input("[SEND] Are you sure? [Y/n]").lower()
+        if validate != "n":
+            print("Email wasn't sent...")
+        else:
+            self.client.send_mail(recipients, subject, message)
 
     def get_options_for_any(self):
         return {
@@ -287,6 +336,10 @@ class InteractiveSession:
         options["e"] = {
             "text": "Logout",
             "function": self.logout
+        }
+        options["send"] = {
+            "text": "Send an email",
+            "function": lambda: self.send()
         }
         options["inbox"] = {
             "text": "Show inbox mails",
@@ -325,7 +378,7 @@ class InteractiveSession:
 
     def get_options_for_anonymous(self):
         options = self.get_options_for_any()
-        options["L"] = {
+        options["l"] = {
             "text": "Login",
             "function": self.login
         }
@@ -338,7 +391,7 @@ class InteractiveSession:
         self.display()
         while True:
             options = self.get_options()
-            choice = input("> ").upper()
+            choice = input("> ").lower()
 
             if choice in options:
                 options[choice]["function"]()
