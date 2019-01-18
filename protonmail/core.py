@@ -1,17 +1,28 @@
 import atexit
-import hashlib
-import time
-import sys
 import getpass
+import hashlib
+import sys
+import time
 
 from bs4 import BeautifulSoup
 from pyvirtualdisplay.display import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from . import settings, utilities, variables, mail
+from . import mail, settings, utilities, variables
+
 
 class ProtonmailClient:
+    """
+    This class contains the core functions
+    that are used by both protonmail-cli and interactive session.
+
+    example usage for reading inbox mails
+    >>> client = core.ProtonmailClient()
+    >>> client.login(settings.username, settings.password)
+    >>> inbox = client.get_mails("inbox")
+    """
+
     web_driver = None
     virtual_display = None
 

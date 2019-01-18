@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 import argparse
 import configparser
 import getpass
@@ -6,7 +6,7 @@ import os
 import sys
 import time
 
-from protonmail import core, metadata, settings, utilities, interactive
+from protonmail import core, interactive, metadata, settings, utilities
 
 
 def subcommand_list(args):

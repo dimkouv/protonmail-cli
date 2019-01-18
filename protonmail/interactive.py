@@ -3,20 +3,21 @@ import sys
 
 from . import core, settings, utilities
 
-"""
-This class is responsible for opening an interactive session.
-
-While on this session users can perform any of the available functions
-through a menu with choices.
-
-Interactive session doesn't used any cached credentials, you have to login
-each time it starts.
-
-Usage
->>> session = interactive.InteractiveSession()
->>> session.start()
-"""
 class InteractiveSession:
+    """
+    This class is responsible for opening an interactive session.
+
+    While on this session users can perform any of the available functions
+    through a menu with choices.
+
+    Interactive session doesn't used any cached credentials, you have to login
+    each time it starts.
+
+    Usage
+    >>> session = interactive.InteractiveSession()
+    >>> session.start()
+    """
+
     def __init__(self):
         """ initialize class fields and protonmail client """
 
