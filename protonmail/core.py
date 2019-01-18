@@ -270,37 +270,13 @@ class InteractiveSession:
         for mail in self.client.get_mails(page):
             print(mail)
 
-    def show_inbox(self):
-        self.show("inbox")
-
-    def show_drafts(self):
-        self.show("drafts")
-
-    def show_sent(self):
-        self.show("sent")
-    
-    def show_starred(self):
-        self.show("starred")
-    
-    def show_archive(self):
-        self.show("archive")
-    
-    def show_spam(self):
-        self.show("spam")
-    
-    def show_trash(self):
-        self.show("trash")
-
-    def show_all(self):
-        self.show("allmail")
-
     def get_options_for_any(self):
         return {
-            "M": {
+            "m": {
                 "text": "Shows this menu",
                 "function": self.display
             },
-            "X": {
+            "x": {
                 "text": "Exit",
                 "function": self.exit
             }
@@ -308,41 +284,41 @@ class InteractiveSession:
 
     def get_options_for_non_anonymous(self):
         options = self.get_options_for_any()
-        options["E"] = {
+        options["e"] = {
             "text": "Logout",
             "function": self.logout
         }
-        options["INBOX"] = {
+        options["inbox"] = {
             "text": "Show inbox mails",
-            "function": self.show_inbox
+            "function": lambda: self.show("inbox")
         }
-        options["DRAFTS"] = {
+        options["drafts"] = {
             "text": "Show drafts",
-            "function": self.show_drafts
+            "function": lambda: self.show("drafts")
         }
-        options["SENT"] = {
+        options["sent"] = {
             "text": "Show sent mails",
-            "function": self.show_sent
+            "function": lambda: self.show("sent")
         }
-        options["STARRED"] = {
+        options["starred"] = {
             "text": "Show starred mails",
-            "function": self.show_starred
+            "function": lambda: self.show("starred")
         }
-        options["ARCHIVE"] = {
+        options["archive"] = {
             "text": "Show archived mails",
-            "function": self.show_archive
+            "function": lambda: self.show("archive")
         }
-        options["SPAM"] = {
+        options["spam"] = {
             "text": "Show spam mails",
-            "function": self.show_spam
+            "function": lambda: self.show("spam")
         }
-        options["TRASH"] = {
+        options["trash"] = {
             "text": "Show trash mails",
-            "function": self.show_trash
+            "function": lambda: self.show("trash")
         }
-        options["ALLMAIL"] = {
+        options["allmail"] = {
             "text": "Show all mails",
-            "function": self.show_all
+            "function": lambda: self.show("allmail")
         }
 
         return options
