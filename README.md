@@ -1,9 +1,9 @@
 # ProtonMail CLI
 
-![protonmail-cli v0.0.2](https://img.shields.io/badge/protonmail--cli-v0.0.2-green.svg)
-![MIT License](https://img.shields.io/dub/l/vibe-d.svg)
+![protonmail-cli v0.0.3](https://img.shields.io/badge/protonmail--cli-v0.0.3-green.svg)
 ![Python 3](https://img.shields.io/badge/python-%3E%3D3-blue.svg)
-![OS](https://img.shields.io/badge/os-unix-lightgrey.svg)
+![OS](https://img.shields.io/badge/os-unix-red.svg)
+![Unofficial](https://img.shields.io/badge/Unofficial-True-yellow.svg)
 
 Command line utility for https://protonmail.com
 
