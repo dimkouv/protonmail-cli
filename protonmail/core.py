@@ -9,25 +9,7 @@ from pyvirtualdisplay.display import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from . import settings, utilities, variables
-
-
-class Mail:
-    def __init__(self, subject, time_received, mail_alias, mail):
-        self.subject = subject
-        self.time_received = time_received
-        self.mail_alias = mail_alias
-        self.mail = mail
-
-    def __str__(self):
-        """
-        Mail string representation
-        """
-        res = "Date: %s\n" % self.time_received
-        res += "From: [%s] %s\n" % (self.mail_alias, self.mail)
-        res += "Subject: %s\n" % self.subject
-        return res
-
+from . import settings, utilities, variables, mail
 
 class ProtonmailClient:
     web_driver = None
@@ -117,7 +99,7 @@ class ProtonmailClient:
         for mail in mails_soup:
             # @TODO mails without subject or title, etc.. are ignored
             try:
-                new_mail = Mail(
+                new_mail = mail.Mail(
                     subject=mail.select(subject_class)[0].get("title"),
                     time_received=mail.select(time_class)[0].string,
                     mail_alias=mail.select(sender_name_class)[0].get("title"),
