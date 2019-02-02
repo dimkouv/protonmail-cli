@@ -85,7 +85,7 @@ class ProtonmailClient:
         except Exception as ignored_err:
             utilities.log("Login failed!")
             raise Exception("Unable to login")
-
+    
     def parse_mails(self):
         """
         Reads and returns a list of Mails inside the current web driver's page
@@ -170,7 +170,28 @@ class ProtonmailClient:
         if old_hash and new_hash != old_hash:
             return True
         return False
+    def change_name(self, new_name):
+        """ Change name of User to Spoof
+           :param new_name: [str] (the name with which we want to spoof
+        """          
+        url = variables.page_urls.get('account')
+        if not url:
+            raise ValueError("Page doesn't exist")
 
+        if self.web_driver.current_url != url:
+            utilities.log("Opening %s" % url)
+            self.web_driver.get(url)
+        #sleep(1)
+        
+        #type the new user name
+        el = self.web_driver.get_element_by_id(variables.element_account['display_name'])
+        el.send_keys(new_name)
+         
+        #click save button
+        el = self.web_driver.find_element_by_class_name(variables.element_account['save_btn'])
+        el.click()
+        
+ 
     def send_mail(self, to, subject, message):
         """Sends email.
 

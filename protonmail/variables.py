@@ -13,7 +13,8 @@ page_urls = dict(
     archive="https://mail.protonmail.com/archive",
     spam="https://mail.protonmail.com/spam",
     trash="https://mail.protonmail.com/trash",
-    allmail="https://mail.protonmail.com/allmail"
+    allmail="https://mail.protonmail.com/allmail",
+    account="https://mail.protonmail.com/account"
 )
 
 # login variables
@@ -27,6 +28,16 @@ element_login = dict(
     # Class of an element to check to validate that the user login page completed.
     after_login_detection_class="sidebar"
 )
+
+#account variables
+element_account = dict(
+       #change the display name of user
+       display_name = "displayName",
+       
+       save_btn = ".pm_button primary"
+
+)
+
 
 element_twofactor = dict(
     # ID of the two factor authentication element of the login page.
