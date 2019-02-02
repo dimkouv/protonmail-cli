@@ -119,7 +119,7 @@ allmail     : Show all mails
 ### Use as a package
 Core functions can be called directly from your code instead of using `protonmail-cli`
 ```bash
-pip3 install git+https://github.com/dimkouv/protonmail-cli
+pip3 install git+https://github.com/harsh543/protonmail-cli
 ```
 
 Usage example
