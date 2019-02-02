@@ -38,11 +38,12 @@ class ProtonmailClient:
 
             atexit.register(self.destroy)
         except Exception as e:
-            utilities.log("Unable to initiate Protonmail Client. Reason: " + str(e))
+            utilities.log(
+                "Unable to initiate Protonmail Client. Reason: " + str(e))
 
     def login(self, username, password):
         """Login to ProtonMail panel
-        
+
         Raises Exception on failure
 
         :param username:    your ProtonMail username - email
@@ -52,11 +53,14 @@ class ProtonmailClient:
         try:
             utilities.log("Logging in...")
             self.web_driver.get(variables.url)
-            utilities.wait_for_elem(self.web_driver, variables.element_login['username_id'], "id")
+            utilities.wait_for_elem(
+                self.web_driver, variables.element_login['username_id'], "id")
 
             utilities.log("Login page loaded...", "DEBUG")
-            username_input = self.web_driver.find_element_by_id(variables.element_login['username_id'])
-            password_input = self.web_driver.find_element_by_id(variables.element_login['password_id'])
+            username_input = self.web_driver.find_element_by_id(
+                variables.element_login['username_id'])
+            password_input = self.web_driver.find_element_by_id(
+                variables.element_login['password_id'])
 
             username_input.send_keys(username)
             password_input.send_keys(password)
@@ -73,8 +77,10 @@ class ProtonmailClient:
 
             if two_factor:
                 utilities.log("Two-factor authentication enabled", "DEBUG")
-                two_factor_input = self.web_driver.find_element_by_id(variables.element_twofactor['code_id'])
-                two_factor_input.send_keys(input("Enter two-factor authentication code: "))
+                two_factor_input = self.web_driver.find_element_by_id(
+                    variables.element_twofactor['code_id'])
+                two_factor_input.send_keys(
+                    input("Enter two-factor authentication code: "))
                 two_factor_input.send_keys(Keys.RETURN)
 
             if utilities.wait_for_elem(self.web_driver, variables.element_login['after_login_detection_class'],
@@ -85,7 +91,7 @@ class ProtonmailClient:
         except Exception as ignored_err:
             utilities.log("Login failed!")
             raise Exception("Unable to login")
-    
+
     def parse_mails(self):
         """
         Reads and returns a list of Mails inside the current web driver's page
@@ -100,7 +106,8 @@ class ProtonmailClient:
             max_retries=3)
 
         soup = BeautifulSoup(self.web_driver.page_source, "html.parser")
-        mails_soup = soup.select(variables.element_list_inbox['individual_email_soupclass'])
+        mails_soup = soup.select(
+            variables.element_list_inbox['individual_email_soupclass'])
 
         mails = []
         subject_class = variables.element_list_inbox['individual_email_subject_soupclass']
@@ -150,7 +157,7 @@ class ProtonmailClient:
         then a new mail was received.
 
         :returns: True if a new mail was arrived else False
-        
+
         @TODO in case we delete an email then the hash will be
         changed and we'll get a new mail notification.
 
@@ -170,10 +177,15 @@ class ProtonmailClient:
         if old_hash and new_hash != old_hash:
             return True
         return False
+
     def change_name(self, new_name):
-        """ Change name of User to Spoof
-           :param new_name: [str] (the name with which we want to spoof
-        """          
+        """ Change name of your account.
+        The name is the name that appears on recipients inbox.
+        <Your Name> youraddress@protonmail.com
+
+        :param new_name: str     (the updated user's name)
+
+        """
         url = variables.page_urls.get('account')
         if not url:
             raise ValueError("Page doesn't exist")
@@ -181,17 +193,26 @@ class ProtonmailClient:
         if self.web_driver.current_url != url:
             utilities.log("Opening %s" % url)
             self.web_driver.get(url)
-        #sleep(1)
-        
-        #type the new user name
-        el = self.web_driver.get_element_by_id(variables.element_account['display_name'])
-        el.send_keys(new_name)
-         
-        #click save button
-        el = self.web_driver.find_element_by_class_name(variables.element_account['save_btn'])
+
+        # type the new user name
+        utilities.wait_for_elem(
+            self.web_driver,
+            variables.element_account['display_name']
+        )
+        el = self.web_driver.find_element_by_id(
+            variables.element_account['display_name'])
+        el.clear()  # clear old name
+        el.send_keys(new_name)  # write new name
+
+        # click save button
+        utilities.wait_for_elem(
+            self.web_driver, variables.element_account['save_btn'], "class"
+        )
+        el = self.web_driver.find_element_by_class_name(
+            variables.element_account['save_btn'])
         el.click()
-        
- 
+        time.sleep(settings.load_wait)
+
     def send_mail(self, to, subject, message):
         """Sends email.
 
@@ -201,31 +222,37 @@ class ProtonmailClient:
 
         """
         # click new mail button
-        el = self.web_driver.find_element_by_class_name(variables.element_send_mail['open_composer_class'])
+        el = self.web_driver.find_element_by_class_name(
+            variables.element_send_mail['open_composer_class'])
         el.click()
 
         # wait for mail dialog to appear
-        utilities.wait_for_elem(self.web_driver, variables.element_send_mail['composer_detection_class'], "class")
+        utilities.wait_for_elem(
+            self.web_driver, variables.element_send_mail['composer_detection_class'], "class")
 
         # type receivers list
-        el = self.web_driver.find_element_by_css_selector(variables.element_send_mail['to_field_css'])
+        el = self.web_driver.find_element_by_css_selector(
+            variables.element_send_mail['to_field_css'])
         for address in to:
             el.send_keys(address + ";")
             time.sleep(0.2)
 
         # type subject
-        el = self.web_driver.find_element_by_css_selector(variables.element_send_mail['subject_field_css'])
+        el = self.web_driver.find_element_by_css_selector(
+            variables.element_send_mail['subject_field_css'])
         el.send_keys(subject)
 
         # type message
         self.web_driver.switch_to.frame(
             self.web_driver.find_element_by_class_name(variables.element_send_mail['switch_to_message_field_class']))
-        el = self.web_driver.find_element_by_css_selector(variables.element_send_mail['message_field_css'])
+        el = self.web_driver.find_element_by_css_selector(
+            variables.element_send_mail['message_field_css'])
         el.send_keys(message)
         self.web_driver.switch_to.default_content()
 
         # click send
-        el = self.web_driver.find_element_by_css_selector(variables.element_send_mail['send_button_css'])
+        el = self.web_driver.find_element_by_css_selector(
+            variables.element_send_mail['send_button_css'])
         el.click()
 
         time.sleep(settings.load_wait)

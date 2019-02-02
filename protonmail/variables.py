@@ -29,15 +29,14 @@ element_login = dict(
     after_login_detection_class="sidebar"
 )
 
-#account variables
+# account variables
 element_account = dict(
-       #change the display name of user
-       display_name = "displayName",
-       
-       save_btn = ".pm_button primary"
+    # user's name input box ID on account settings page
+    display_name="displayName",
 
+    # save button class on account settings page
+    save_btn="identitySection-form .pm_button.primary"
 )
-
 
 element_twofactor = dict(
     # ID of the two factor authentication element of the login page.
