@@ -114,14 +114,14 @@ class ProtonmailClient:
         time_class = variables.element_list_inbox['individual_email_time_soupclass']
         sender_name_class = variables.element_list_inbox['individual_email_sender_name_soupclass']
 
-        for mail in mails_soup:
+        for m in mails_soup:
             # @TODO mails without subject or title, etc.. are ignored
             try:
                 new_mail = mail.Mail(
-                    subject=mail.select(subject_class)[0].get("title"),
-                    time_received=mail.select(time_class)[0].string,
-                    mail_alias=mail.select(sender_name_class)[0].get("title"),
-                    mail=mail.select(sender_name_class)[0].string,
+                    subject=m.select(subject_class)[0].get("title"),
+                    time_received=m.select(time_class)[0].string,
+                    mail_alias=m.select(sender_name_class)[0].get("title"),
+                    mail=m.select(sender_name_class)[0].string,
                 )
                 mails.append(new_mail)
             except Exception as e:
@@ -167,9 +167,9 @@ class ProtonmailClient:
         old_hash = utilities.get_hash()
 
         mails_str = ""
-        for mail in mails:
-            mails_str += str(mail)
-            mails_str += str(mail)
+        for m in mails:
+            mails_str += str(m)
+            mails_str += str(m)
 
         new_hash = hashlib.sha256(mails_str.encode()).hexdigest()
         utilities.write_hash(new_hash)
