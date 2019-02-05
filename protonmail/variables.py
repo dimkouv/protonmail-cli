@@ -35,7 +35,10 @@ element_account = dict(
     display_name="displayName",
 
     # save button class on account settings page
-    save_btn="identitySection-form .pm_button.primary"
+    save_btn="identitySection-form .pm_button.primary",
+   
+    #back button class to return back to main page
+    back_btn=".sidebar-btn-back"    
 )
 
 element_twofactor = dict(

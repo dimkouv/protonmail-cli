@@ -212,7 +212,10 @@ class ProtonmailClient:
             variables.element_account['save_btn'])
         el.click()
         time.sleep(settings.load_wait)
-
+        #click back button
+        el = self.web_driver.find_element_by_class_name(
+            variables.element_account['back_btn'])
+        el.click()
     def send_mail(self, to, subject, message):
         """Sends email.
 
