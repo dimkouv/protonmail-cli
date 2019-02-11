@@ -218,15 +218,46 @@ class ProtonmailClient:
             variables.element_account['back_btn'])
         el.click()
 
-    def send_mail(self, to, subject, message, as_html=False):
+    def send_mail(self, to, subject, message, as_html=False, attachments=[]):
         """Sends email.
 
-        :param to:      [str]     (list of mail addresses - recipients)
-        :param message: str       (subject of the mail)
-        :param subject: str       (message of the mail)
-        :param as_html: bool      (whether or not to render :message as html)
+        :param to:          [str]     (list of mail addresses - recipients)
+        :param message:     str       (subject of the mail)
+        :param subject:     str       (message of the mail)
+        :param as_html:     bool      (whether or not to render :message as html)
+        :param attachments: [str]     (list of files to upload as attachments)
 
         """
+        def upload_attachments(attachments):
+            # wait for files to be uploaded
+            initial_send_text = self.web_driver.find_element_by_css_selector(
+                variables.element_send_mail['send_button_css']
+            ).text
+
+            el = self.web_driver.find_element_by_css_selector(
+                'input[type=file][multiple=multiple]'
+            )
+            el.send_keys("\n".join(attachments))
+
+            time.sleep(settings.load_wait)
+
+            try:
+                # this dialog appears on images for inline placing
+                self.web_driver.find_element_by_css_selector(
+                    variables.element_send_mail['as_attachment_btn']
+                ).click()
+            except:
+                pass
+
+            # wait for files to be uploaded
+            while True:
+                time.sleep(settings.load_wait)
+                curr_send_text = self.web_driver.find_element_by_css_selector(
+                    variables.element_send_mail['send_button_css']
+                ).text
+                if curr_send_text == initial_send_text:
+                    break
+
         # click new mail button
         el = self.web_driver.find_element_by_class_name(
             variables.element_send_mail['open_composer_class'])
@@ -265,6 +296,9 @@ class ProtonmailClient:
             """ % (message.replace('"', '\\"')))
 
         self.web_driver.switch_to.default_content()
+
+        if attachments:
+            upload_attachments(attachments)
 
         # click send
         el = self.web_driver.find_element_by_css_selector(

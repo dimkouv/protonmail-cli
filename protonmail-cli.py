@@ -32,7 +32,8 @@ def subcommand_check(args):
 
 def subcommand_send(args):
     try:
-        client.send_mail(args.to, args.subject, args.body, args.html)
+        client.send_mail(args.to, args.subject, args.body,
+                         args.html, args.attachment)
         print("Mail sent")
     except Exception as e:
         utilities.log("Unable to send email. Reason: " + str(e))
@@ -127,6 +128,13 @@ def parse_args():
         "--body",
         help="Body text",
         required=True)
+    send_mail_parser.add_argument(
+        "-a",
+        "--attachment",
+        help="Attachment file location",
+        action="append",
+        required=False
+    )
     send_mail_parser.add_argument(
         "--html",
         help="Pass this parameter to render body as html",

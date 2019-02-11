@@ -87,7 +87,11 @@ element_send_mail = dict(
     message_field_css="html.angular-squire-iframe body",
 
     # CSS selector of the send email button.
-    send_button_css=".btnSendMessage-btn-action"
+    send_button_css=".btnSendMessage-btn-action",
+
+    # CSS selector for 'as attachment' button that appears when you try
+    # to add an image as attachment
+    as_attachment_btn="button.pm_button.primary.composerAskEmbdded-btn-attachment"
 )
 
 # Other variables used by protonmail-cli
