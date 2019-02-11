@@ -30,14 +30,16 @@ class CoreTest(unittest.TestCase):
         try:
             self.client.login(self.username, self.password)
         except Exception as e:
-            self.fail("login() unable to login with correct credentials:" + str(e))
+            self.fail(
+                "login() unable to login with correct credentials:" + str(e))
 
     def test_2_get_mails(self):
         for page in variables.page_urls:
             try:
                 mails = self.client.get_mails(page)
                 if mails is None:
-                    self.fail("[%s] unable to load conversation wrapper" % page)
+                    self.fail(
+                        "[%s] unable to load conversation wrapper" % page)
 
                 if page in ["inbox", "spam"] and len(mails) == 0:
                     # there should be at least one mail in inbox and spam
@@ -46,7 +48,8 @@ class CoreTest(unittest.TestCase):
                 print("[%-10s] total mails: %d" % (page, len(mails)))
 
             except Exception as e:
-                self.fail("[%s] unable to read any mail error: %s" % (page, str(e)))
+                self.fail("[%s] unable to read any mail error: %s" %
+                          (page, str(e)))
 
     def test_3_has_new_mail(self):
         # generate a hash of the current inbox
@@ -67,7 +70,14 @@ class CoreTest(unittest.TestCase):
             "[Success] This message was automatically send from protonmail-cli tests."
         )
 
-    def test_5_stop(self):
+    def test_5_send_mail_html(self):
+        self.client.send_mail(
+            [self.test_address],
+            "[protonmail-cli] success? (check for html)",
+            "[Success] This message was automatically send from <h1>protonmail-cli</h1> tests."
+        )
+
+    def test_6_stop(self):
         self.client.destroy()
 
         self.assertEqual(self.client.web_driver, None)

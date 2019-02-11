@@ -18,7 +18,8 @@ def subcommand_check(args):
     while True:
         if client.has_new_mail():
             print("New mail arrived")
-            os.system("notify-send 'You received a new mail on your ProtonMail inbox'")
+            os.system(
+                "notify-send 'You received a new mail on your ProtonMail inbox'")
         else:
             print("You don't have new mails")
 
@@ -31,7 +32,7 @@ def subcommand_check(args):
 
 def subcommand_send(args):
     try:
-        client.send_mail(args.to, args.subject, args.body)
+        client.send_mail(args.to, args.subject, args.body, args.html)
         print("Mail sent")
     except Exception as e:
         utilities.log("Unable to send email. Reason: " + str(e))
@@ -126,6 +127,12 @@ def parse_args():
         "--body",
         help="Body text",
         required=True)
+    send_mail_parser.add_argument(
+        "--html",
+        help="Pass this parameter to render body as html",
+        required=False,
+        action='store_true'
+    )
 
     args = parser.parse_args()
     overwrite_settings(args)

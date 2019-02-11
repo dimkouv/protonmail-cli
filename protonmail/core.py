@@ -218,12 +218,13 @@ class ProtonmailClient:
             variables.element_account['back_btn'])
         el.click()
 
-    def send_mail(self, to, subject, message):
+    def send_mail(self, to, subject, message, as_html=False):
         """Sends email.
 
         :param to:      [str]     (list of mail addresses - recipients)
         :param message: str       (subject of the mail)
         :param subject: str       (message of the mail)
+        :param as_html: bool      (whether or not to render :message as html)
 
         """
         # click new mail button
@@ -247,12 +248,22 @@ class ProtonmailClient:
             variables.element_send_mail['subject_field_css'])
         el.send_keys(subject)
 
-        # type message
         self.web_driver.switch_to.frame(
-            self.web_driver.find_element_by_class_name(variables.element_send_mail['switch_to_message_field_class']))
+            self.web_driver.find_element_by_class_name(
+                variables.element_send_mail['switch_to_message_field_class'])
+        )
         el = self.web_driver.find_element_by_css_selector(
             variables.element_send_mail['message_field_css'])
-        el.send_keys(message)
+
+        if not as_html:
+            # type message if we don't want to render as html
+            el.send_keys(message)
+        else:
+            # render as html by executing a js oneliner to alter the DOM
+            self.web_driver.execute_script("""
+                document.querySelector('.angular-squire-iframe body>div').innerHTML="%s"
+            """ % (message.replace('"', '\\"')))
+
         self.web_driver.switch_to.default_content()
 
         # click send

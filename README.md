@@ -58,7 +58,8 @@ protonmail-cli send \
     -t "one@protonmail.com" \
     -t "two@pm.me" \
     -s "my subject" \
-    -b "my mail message"
+    -b "my mail message" \
+    --html # (optional if you want to render body as html)
 ```
 
 *Global settings, including user credentials, can be specified on* `/opt/protonmail-cli/protonmail/settings.py`
@@ -134,6 +135,17 @@ client.send_mail(
     ["one@protonmail.com", "two@pm.me"],
     "subject",
     "my mail message"
+)
+
+# send mails as html
+client.send_mail(
+    ["one@protonmail.com", "two@pm.me"],
+    "subject",
+    """
+    <h1>hello friend</h1>
+    <p>This message was sent from <strong>protonmail-cli</strong></p>
+    """,
+    as_html=True
 )
 
 # read mails
