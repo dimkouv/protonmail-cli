@@ -59,7 +59,9 @@ protonmail-cli send \
     -t "two@pm.me" \
     -s "my subject" \
     -b "my mail message" \
-    --html # (optional if you want to render body as html)
+    --html # (optional if you want to render body as html) \
+    -a "/path/to/file.jpg" \ # (optional for adding attachments)
+    -a "/path/to/other/file.pdf"
 ```
 
 *Global settings, including user credentials, can be specified on* `/opt/protonmail-cli/protonmail/settings.py`
@@ -146,6 +148,15 @@ client.send_mail(
     <p>This message was sent from <strong>protonmail-cli</strong></p>
     """,
     as_html=True
+)
+
+# upload attachments
+client.send_mail(
+    ...,
+    attachments=[
+        '/path/to/file.jpg',
+        '/path/to/other/file.pdf'
+    ]
 )
 
 # read mails
