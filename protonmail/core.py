@@ -71,9 +71,12 @@ class ProtonmailClient:
             time.sleep(1)
 
             two_factor = False
-            if "ng-hide" not in self.web_driver.find_element_by_id(
-                    variables.element_twofactor['detection_id']).get_attribute('class'):
+
+            try:
+                self.web_driver.find_element_by_id(variables.element_twofactor['detection_id']).get_attribute('class')
                 two_factor = True
+            except:
+                pass
 
             if two_factor:
                 utilities.log("Two-factor authentication enabled", "DEBUG")
