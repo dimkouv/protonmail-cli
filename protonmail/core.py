@@ -140,12 +140,13 @@ class ProtonmailClient:
 
     def get_mails(self, page):
         """
-        Get a list of mails that are into the given page
+        Get a list of mails that are into the given page, folder, or label
 
-        :param page: One of the pages listed in variables.py > page_urls
+        :param page: One of the pages listed in variables.py > page_urls, or a user defined folder or label
         :return: a list of Mail objects
         """
-        url = variables.page_urls.get(page)
+
+        url = variables.page_urls.get(page) or self.get_folders_and_labels().get(page.lower())
         if not url:
             raise ValueError("Page doesn't exist")
 
@@ -163,9 +164,6 @@ class ProtonmailClient:
         """
         # this is valid because ProtonMail folders are case-insensitive
         folder = folder.lower()
-
-        print("Folder is {}".format(folder))
-        print("folder list is {}".format(self.get_folders()))
 
         url = self.get_folders().get(folder)
         if not url:
