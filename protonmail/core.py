@@ -154,6 +154,113 @@ class ProtonmailClient:
             self.web_driver.get(url)
         return self.parse_mails()
 
+    def get_mails_in_folder(self, folder):
+        """
+        Get a list of mails that are in the given folder
+
+        :param page: A user defined folder, populated at runtime by get_folders()
+        :return: a list of Mail objects
+        """
+        # this is valid because ProtonMail folders are case-insensitive
+        folder = folder.lower()
+
+        print("Folder is {}".format(folder))
+        print("folder list is {}".format(self.get_folders()))
+
+        url = self.get_folders().get(folder)
+        if not url:
+            raise ValueError("Folder doesn't exist")
+
+        if self.web_driver.current_url != url:
+            utilities.log("Opening %s" % url)
+            self.web_driver.get(url)
+        return self.parse_mails()
+
+    def get_mails_in_label(self, label):
+        """
+        Get a list of mails that are in the given label
+
+        :param label: A user defined label, populated at runtime by get_labels()
+        :return: a list of Mail objects
+        """
+        # this is valid because ProtonMail labels are case-insensitive
+        label = label.lower()
+
+        url = self.get_labels().get(label)
+        if not url:
+            raise ValueError("Label doesn't exist")
+
+        if self.web_driver.current_url != url:
+            utilities.log("Opening %s" % url)
+            self.web_driver.get(url)
+        return self.parse_mails()
+
+    def get_folders_and_labels(self):
+        """
+        Get a list of the user's mail folders and labels
+
+        :return: a dict of mail folder and label urls, similar to page_urls
+        """
+        all_items = dict()
+
+        soup = BeautifulSoup(self.web_driver.page_source, "html.parser")
+        folders_and_labels = soup.select(
+            variables.element_folders_labels['list_element_title_selector']
+        )
+
+        for folder_or_label in folders_and_labels:
+            # this is valid because ProtonMail folders and labels are case-insensitive
+            name = folder_or_label.text.lower()
+            path = folder_or_label.parent['href']
+
+            all_items[name] = variables.base_url + path
+
+        return all_items
+
+    def get_folders(self):
+        """
+        Get a list of mail folders (not labels!)
+
+        :return: a dict of mail folder urls, similar to page_urls
+        """
+        all_folders = dict()
+
+        soup = BeautifulSoup(self.web_driver.page_source, "html.parser")
+        folders = soup.select(
+            variables.element_folders_labels['folder_element_selector']
+        )
+
+        for folder in folders:
+            # this is valid because ProtonMail folders are case-insensitive
+            name = folder.find_next_sibling("span", class_="menuLabel-title").text.lower()
+            path = folder.parent['href']
+
+            all_folders[name] = variables.base_url + path
+
+        return all_folders
+
+    def get_labels(self):
+        """
+        Get a list of mail labels (not folders!)
+
+        :return: a dict of mail label urls, similar to page_urls
+        """
+        all_labels = dict()
+
+        soup = BeautifulSoup(self.web_driver.page_source, "html.parser")
+        labels = soup.select(
+            variables.element_folders_labels['label_element_selector']
+        )
+
+        for label in labels:
+            # this is valid because ProtonMail labels are case-insensitive
+            name = label.find_next_sibling("span", class_="menuLabel-title").text.lower()
+            path = label.parent['href']
+
+            all_labels[name] = variables.base_url + path
+
+        return all_labels
+
     def has_new_mail(self):
         """Generates a unique hash from the mail inbox
         If the hash is different from the previous call of this function
