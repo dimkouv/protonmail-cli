@@ -1,8 +1,11 @@
 # ProtonMail web interface variables
 # Current WebClient version: v3.14.10
 
+# Base URL for the ProtonMail web interface
+base_url = "https://mail.protonmail.com"
+
 # Main URL for the login interface.
-url = "https://mail.protonmail.com/login"
+url = base_url + "/login"
 
 # Pages that contain mails and their urls
 page_urls = dict(
@@ -92,6 +95,21 @@ element_send_mail = dict(
     # CSS selector for 'as attachment' button that appears when you try
     # to add an image as attachment
     as_attachment_btn="button.pm_button.primary.composerAskEmbdded-btn-attachment"
+)
+
+element_folders_labels = dict(
+    # CSS selector for a list-item in the sidebar
+    # indicating either a folder or label
+    list_element_selector=".menuLabel-item",
+
+    # CSS selector specific to folders in the list of folders and labels
+    folder_element_selector=".fa-folder.menuLabel-icon",
+
+    # CSS selector specific to labels in the list of folders and labels
+    label_element_selector=".fa-tag.menuLabel-icon",
+
+    # CSS selector for the title in a folder or label list-item
+    list_element_title_selector=".menuLabel-title"
 )
 
 # Other variables used by protonmail-cli
