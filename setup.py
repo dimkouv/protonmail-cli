@@ -1,26 +1,23 @@
 import setuptools
 
-from protonmail import metadata
-
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+requirements = ["selenium", "pyvirtualdisplay", "BeautifulSoup4"]
+
 setuptools.setup(
-    name=metadata.name,
-    version=metadata.__version__,
-    author=metadata.author_name,
-    author_email=metadata.author_email,
-    description=metadata.description,
+    name="protonmail",
+    version="0.0.5",
+    author="dimkouv",
+    install_requires=requirements,
+    setup_requires=requirements,
+    author_email="dimkouv@protonmail.com",
+    description="Command line utility for https://protonmail.com",
     long_description=long_description,
     license='MIT',
     long_description_content_type="text/markdown",
-    url=metadata.url,
+    url="https://github.com/dimkouv/protonmail-cli",
     python_requires='>=3',
-    install_requires=[
-        "beautifulsoup4",
-        "selenium",
-        "pyvirtualdisplay",
-    ],
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
