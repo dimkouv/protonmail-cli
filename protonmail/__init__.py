@@ -1,1 +1,1 @@
-from . import core, interactive, settings, utilities, variables, mail, metadata
+from . import core, interactive, settings, utilities, variables, mail

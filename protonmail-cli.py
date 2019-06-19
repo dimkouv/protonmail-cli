@@ -6,7 +6,7 @@ import os
 import sys
 import time
 
-from protonmail import core, interactive, metadata, settings, utilities
+from protonmail import core, interactive, settings, utilities
 
 
 def subcommand_list(args):
@@ -58,17 +58,17 @@ def overwrite_settings(args):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=metadata.description,
+        description="Command line utility for https://protonmail.com",
         epilog="Author: {name} <{email}> {url}".format(
-            name=metadata.author_name,
-            email=metadata.author_email,
-            url=metadata.url))
+            name="dimkouv",
+            email="dimkouv@protonmail.com",
+            url="dimkouv@protonmail.com"))
 
     parser.add_argument(
         "-v",
         "--version",
         action="version",
-        version="%(prog)s {version}".format(version=metadata.__version__))
+        version="%(prog)s {version}".format(version="0.0.5"))
 
     parser.add_argument(
         "--credential",

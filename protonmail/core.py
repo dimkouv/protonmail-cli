@@ -50,6 +50,10 @@ class ProtonmailClient:
         :param password:    your ProtonMail password
 
         """
+        if self.web_driver is None:
+            utilities.log("Client is not initialized")
+            return
+
         try:
             utilities.log("Logging in...")
             self.web_driver.get(variables.url)
@@ -422,7 +426,6 @@ class ProtonmailClient:
         Should be called after any work done with client
         """
         if self.web_driver is not None:
-            self.web_driver.close()
             self.web_driver.quit()
             self.web_driver = None
 
