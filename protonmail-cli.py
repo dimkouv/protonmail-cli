@@ -68,7 +68,7 @@ def parse_args():
         "-v",
         "--version",
         action="version",
-        version="%(prog)s {version}".format(version="0.0.5"))
+        version="%(prog)s {version}".format(version="0.0.6"))
 
     parser.add_argument(
         "--credential",

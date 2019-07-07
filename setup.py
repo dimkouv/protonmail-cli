@@ -7,7 +7,7 @@ requirements = ["selenium", "pyvirtualdisplay", "BeautifulSoup4"]
 
 setuptools.setup(
     name="protonmail",
-    version="0.0.5",
+    version="0.0.6",
     author="dimkouv",
     install_requires=requirements,
     setup_requires=requirements,

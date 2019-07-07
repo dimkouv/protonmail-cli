@@ -125,7 +125,7 @@ class ProtonmailClient:
             # @TODO mails without subject or title, etc.. are ignored
             try:
                 new_mail = mail.Mail(
-                    subject=m.select(subject_class)[0].get("title"),
+                    subject=m.select(subject_class)[0].string,
                     time_received=m.select(time_class)[0].string,
                     mail_alias=m.select(sender_name_class)[0].get("title"),
                     mail=m.select(sender_name_class)[0].string,

@@ -55,13 +55,13 @@ element_twofactor = dict(
 # list-inbox variables
 element_list_inbox = dict(
     # ID of the wrapper for conversations list
-    email_list_wrapper_id="conversation-list-columns",
+    email_list_wrapper_id="conversation-list-rows",
 
     # Class of the element representing an email in the conversation frame.
-    individual_email_soupclass=".conversation-meta",
+    individual_email_soupclass=".conversation-wrapper .conversation",
 
     # Class of the subject for an email.
-    individual_email_subject_soupclass=".subject",
+    individual_email_subject_soupclass=".subject-text",
 
     # Class of the time sent for an email.
     individual_email_time_soupclass=".time",
