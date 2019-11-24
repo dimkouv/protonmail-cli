@@ -10,9 +10,9 @@ Command line utility for https://protonmail.com
 ## Installation
 System dependencies *(Probably everything's already installed)*
 ```bash
-apt install -y xvfb python3-pip firefox                 # on debian
-dnf install xorg-x11-server-Xvfb python3-pip firefox    # on fedora
-pacman -S xorg-server-xvfb python-pip firefox wget      # on arch
+sudo apt install -y xvfb python3-pip firefox                 # on debian
+sudo dnf install xorg-x11-server-Xvfb python3-pip firefox    # on fedora
+sudo pacman -S xorg-server-xvfb python-pip firefox wget      # on arch
 ```
 
 Geckodriver
@@ -20,14 +20,9 @@ Geckodriver
 # Find your release: https://github.com/mozilla/geckodriver/releases
 
 # for linux x64
-wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz
-# for arm 7
-wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-arm7hf.tar.gz
-# for linux x32
-wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux32.tar.gz
+wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz
 
-tar -xvf geckodriver-*.tar.gz -C /bin/
-rm geckodriver-*.tar.gz
+sudo tar -xvf geckodriver-*.tar.gz -C /usr/local/bin/ ; rm geckodriver-*.tar.gz
 ```
 
 Protonmail CLI
