@@ -405,12 +405,14 @@ class ProtonmailClient:
             # render as html by executing a js oneliner to alter the DOM
             self.web_driver.execute_script("""
                 document.querySelector('.angular-squire-iframe body>div').innerHTML="%s"
-            """ % (message.replace('"', '\\"')))
+            """ % (message))
+            el.send_keys()
 
         self.web_driver.switch_to.default_content()
 
         if attachments:
             upload_attachments(attachments)
+
 
         # click send
         el = self.web_driver.find_element_by_css_selector(
